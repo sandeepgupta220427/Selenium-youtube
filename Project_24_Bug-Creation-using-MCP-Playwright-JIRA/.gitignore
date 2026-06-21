@@ -1,0 +1,7 @@
+node_modules/
+test-results/
+playwright-report/
+out.txt
+error.log
+
+mcp_config.json

@@ -1,0 +1,220 @@
+{
+    "id": "agentic-rag-tools",
+    "data": {
+        "nodes": [
+            {
+                "id": "ChatInput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 100,
+                    "y": 400
+                },
+                "data": {
+                    "type": "ChatInput",
+                    "node": {
+                        "display_name": "Chat Input"
+                    }
+                }
+            },
+            {
+                "id": "Agent-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 600,
+                    "y": 400
+                },
+                "data": {
+                    "type": "ToolCallingAgent",
+                    "node": {
+                        "display_name": "Tool Calling Agent",
+                        "description": "ReAct agent that dynamically selects tools based on query",
+                        "template": {
+                            "max_iterations": {
+                                "type": "int",
+                                "value": 5,
+                                "display_name": "Max Iterations"
+                            },
+                            "handle_parsing_errors": {
+                                "type": "bool",
+                                "value": true
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "AgentLLM-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 400,
+                    "y": 200
+                },
+                "data": {
+                    "type": "ChatOpenAI",
+                    "node": {
+                        "display_name": "GPT-4o (Agent Reasoning)",
+                        "template": {
+                            "model_name": {
+                                "type": "str",
+                                "value": "gpt-4o"
+                            },
+                            "temperature": {
+                                "type": "float",
+                                "value": 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "APITool-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 300,
+                    "y": 500
+                },
+                "data": {
+                    "type": "RetrieverTool",
+                    "node": {
+                        "display_name": "API Test Docs Tool",
+                        "template": {
+                            "name": {
+                                "type": "str",
+                                "value": "api_test_docs"
+                            },
+                            "description": {
+                                "type": "str",
+                                "value": "Search API testing documentation and test cases. Use for REST API, endpoint, and API test strategy questions."
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "UITool-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 500,
+                    "y": 600
+                },
+                "data": {
+                    "type": "RetrieverTool",
+                    "node": {
+                        "display_name": "UI Test Docs Tool",
+                        "template": {
+                            "name": {
+                                "type": "str",
+                                "value": "ui_test_docs"
+                            },
+                            "description": {
+                                "type": "str",
+                                "value": "Search UI testing guides and Selenium/Playwright docs. Use for browser testing and visual testing questions."
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "BugTool-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 700,
+                    "y": 600
+                },
+                "data": {
+                    "type": "RetrieverTool",
+                    "node": {
+                        "display_name": "Bug Reports Tool",
+                        "template": {
+                            "name": {
+                                "type": "str",
+                                "value": "bug_reports"
+                            },
+                            "description": {
+                                "type": "str",
+                                "value": "Search historical bug reports and known issues. Use for past bugs, regressions, and known defects."
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "WebTool-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 900,
+                    "y": 500
+                },
+                "data": {
+                    "type": "SearchAPITool",
+                    "node": {
+                        "display_name": "Web Search Tool",
+                        "template": {
+                            "name": {
+                                "type": "str",
+                                "value": "web_search"
+                            },
+                            "description": {
+                                "type": "str",
+                                "value": "Search the web for latest testing best practices, tools, and industry standards."
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ChatOutput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1000,
+                    "y": 400
+                },
+                "data": {
+                    "type": "ChatOutput",
+                    "node": {
+                        "display_name": "Chat Output"
+                    }
+                }
+            }
+        ],
+        "edges": [
+            {
+                "source": "ChatInput-1",
+                "target": "Agent-1",
+                "targetHandle": "input"
+            },
+            {
+                "source": "AgentLLM-1",
+                "target": "Agent-1",
+                "targetHandle": "llm"
+            },
+            {
+                "source": "APITool-1",
+                "target": "Agent-1",
+                "targetHandle": "tools"
+            },
+            {
+                "source": "UITool-1",
+                "target": "Agent-1",
+                "targetHandle": "tools"
+            },
+            {
+                "source": "BugTool-1",
+                "target": "Agent-1",
+                "targetHandle": "tools"
+            },
+            {
+                "source": "WebTool-1",
+                "target": "Agent-1",
+                "targetHandle": "tools"
+            },
+            {
+                "source": "Agent-1",
+                "target": "ChatOutput-1"
+            }
+        ]
+    },
+    "description": "Agentic RAG with Tool Calling Agent: dynamically selects from API docs, UI docs, bug reports, and web search tools",
+    "name": "Agentic RAG with Tool Selection",
+    "endpoint_name": "agentic-rag"
+}

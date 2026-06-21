@@ -1,0 +1,284 @@
+{
+    "id": "multimodal-rag",
+    "data": {
+        "nodes": [
+            {
+                "id": "File-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 100,
+                    "y": 300
+                },
+                "data": {
+                    "type": "File",
+                    "node": {
+                        "display_name": "PDF/Image Loader",
+                        "description": "Load PDFs with images, tables, and text"
+                    }
+                }
+            },
+            {
+                "id": "Parser-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 400,
+                    "y": 300
+                },
+                "data": {
+                    "type": "Unstructured",
+                    "node": {
+                        "display_name": "Unstructured Parser",
+                        "description": "Extract text, tables, and images from complex documents",
+                        "template": {
+                            "strategy": {
+                                "type": "str",
+                                "value": "hi_res"
+                            },
+                            "extract_images": {
+                                "type": "bool",
+                                "value": true
+                            },
+                            "infer_table_structure": {
+                                "type": "bool",
+                                "value": true
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "VisionLLM-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 700,
+                    "y": 150
+                },
+                "data": {
+                    "type": "ChatOpenAI",
+                    "node": {
+                        "display_name": "GPT-4o (Vision - Image Summarizer)",
+                        "template": {
+                            "model_name": {
+                                "type": "str",
+                                "value": "gpt-4o"
+                            },
+                            "temperature": {
+                                "type": "float",
+                                "value": 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ImagePrompt-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 700,
+                    "y": 300
+                },
+                "data": {
+                    "type": "Prompt",
+                    "node": {
+                        "display_name": "Image Description Prompt",
+                        "template": {
+                            "template": {
+                                "type": "str",
+                                "value": "Describe this image in detail for a QA engineer. Include any visible error messages, UI elements, test results, data values, and relationships shown. Description:"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "TableSummarizer-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 700,
+                    "y": 450
+                },
+                "data": {
+                    "type": "Prompt",
+                    "node": {
+                        "display_name": "Table Summarizer",
+                        "template": {
+                            "template": {
+                                "type": "str",
+                                "value": "Summarize this table concisely, preserving all key data points, column headers, and row identifiers:\n\n{table_content}\n\nSummary:"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "Embeddings-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1000,
+                    "y": 400
+                },
+                "data": {
+                    "type": "OpenAIEmbeddings",
+                    "node": {
+                        "display_name": "OpenAI Embeddings",
+                        "template": {
+                            "model": {
+                                "type": "str",
+                                "value": "text-embedding-3-small"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "MultiVector-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1000,
+                    "y": 250
+                },
+                "data": {
+                    "type": "MultiVectorRetriever",
+                    "node": {
+                        "display_name": "Multi-Vector Retriever",
+                        "description": "Stores summaries for search, returns original content (including images/tables)"
+                    }
+                }
+            },
+            {
+                "id": "ChatInput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1000,
+                    "y": 550
+                },
+                "data": {
+                    "type": "ChatInput",
+                    "node": {
+                        "display_name": "Chat Input"
+                    }
+                }
+            },
+            {
+                "id": "FinalPrompt-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1300,
+                    "y": 350
+                },
+                "data": {
+                    "type": "Prompt",
+                    "node": {
+                        "display_name": "Multi-Modal Answer Prompt",
+                        "template": {
+                            "template": {
+                                "type": "str",
+                                "value": "Answer the question using the provided multi-modal context (may include text, table data, and image descriptions).\n\nContext:\n{context}\n\nQuestion: {question}\n\nAnswer:"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "GeneratorLLM-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1600,
+                    "y": 350
+                },
+                "data": {
+                    "type": "ChatOpenAI",
+                    "node": {
+                        "display_name": "GPT-4o (Generator)",
+                        "template": {
+                            "model_name": {
+                                "type": "str",
+                                "value": "gpt-4o"
+                            },
+                            "temperature": {
+                                "type": "float",
+                                "value": 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ChatOutput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1900,
+                    "y": 350
+                },
+                "data": {
+                    "type": "ChatOutput",
+                    "node": {
+                        "display_name": "Chat Output"
+                    }
+                }
+            }
+        ],
+        "edges": [
+            {
+                "source": "File-1",
+                "target": "Parser-1"
+            },
+            {
+                "source": "Parser-1",
+                "target": "ImagePrompt-1",
+                "sourceHandle": "images"
+            },
+            {
+                "source": "Parser-1",
+                "target": "TableSummarizer-1",
+                "sourceHandle": "tables"
+            },
+            {
+                "source": "ImagePrompt-1",
+                "target": "VisionLLM-1"
+            },
+            {
+                "source": "VisionLLM-1",
+                "target": "MultiVector-1",
+                "targetHandle": "summaries"
+            },
+            {
+                "source": "TableSummarizer-1",
+                "target": "MultiVector-1",
+                "targetHandle": "summaries"
+            },
+            {
+                "source": "Parser-1",
+                "target": "MultiVector-1",
+                "sourceHandle": "text",
+                "targetHandle": "documents"
+            },
+            {
+                "source": "Embeddings-1",
+                "target": "MultiVector-1",
+                "targetHandle": "embeddings"
+            },
+            {
+                "source": "MultiVector-1",
+                "target": "FinalPrompt-1",
+                "targetHandle": "context"
+            },
+            {
+                "source": "ChatInput-1",
+                "target": "FinalPrompt-1",
+                "targetHandle": "question"
+            },
+            {
+                "source": "FinalPrompt-1",
+                "target": "GeneratorLLM-1"
+            },
+            {
+                "source": "GeneratorLLM-1",
+                "target": "ChatOutput-1"
+            }
+        ]
+    },
+    "description": "Multi-Modal RAG: Parse PDFs into text/tables/images → Vision LLM summaries → Multi-Vector Retriever → GPT-4o generation",
+    "name": "Multi-Modal RAG",
+    "endpoint_name": "multimodal-rag"
+}

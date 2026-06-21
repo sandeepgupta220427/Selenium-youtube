@@ -1,0 +1,198 @@
+{
+    "name": "Naive RAG Pipeline",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "naive-rag",
+                "responseMode": "lastNode"
+            },
+            "id": "webhook-trigger",
+            "name": "Webhook Trigger",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                200,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "id": "ai-agent",
+            "name": "AI Agent",
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 1.7,
+            "position": [
+                600,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "model": "gpt-4o-mini",
+                "options": {
+                    "temperature": 0
+                }
+            },
+            "id": "openai-chat",
+            "name": "OpenAI Chat Model",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1,
+            "position": [
+                400,
+                500
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI API"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "name": "qa_knowledge_base",
+                "description": "Search the QA knowledge base for test documentation, test cases, and testing best practices. Use this tool to find relevant information about testing."
+            },
+            "id": "vector-store-tool",
+            "name": "Vector Store Retriever",
+            "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+            "typeVersion": 1,
+            "position": [
+                600,
+                500
+            ]
+        },
+        {
+            "parameters": {
+                "pineconeIndex": "qa-knowledge-base",
+                "options": {
+                    "pineconeNamespace": "naive-rag"
+                }
+            },
+            "id": "pinecone-store",
+            "name": "Pinecone Vector Store",
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1,
+            "position": [
+                600,
+                700
+            ],
+            "credentials": {
+                "pineconeApi": {
+                    "id": "YOUR_PINECONE_CREDENTIAL_ID",
+                    "name": "Pinecone API"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "model": "text-embedding-3-small"
+            },
+            "id": "openai-embeddings",
+            "name": "OpenAI Embeddings",
+            "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+            "typeVersion": 1,
+            "position": [
+                800,
+                700
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI API"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "respondWith": "text",
+                "responseBody": "={{ $json.output }}"
+            },
+            "id": "respond-webhook",
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                1000,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Agent": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI Chat Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Vector Store Retriever": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Pinecone Vector Store": {
+            "ai_vectorStore": [
+                [
+                    {
+                        "node": "Vector Store Retriever",
+                        "type": "ai_vectorStore",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI Embeddings": {
+            "ai_embedding": [
+                [
+                    {
+                        "node": "Pinecone Vector Store",
+                        "type": "ai_embedding",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "meta": {
+        "description": "Naive RAG pipeline using n8n: Webhook trigger → AI Agent with Vector Store Retriever (Pinecone) → Response"
+    }
+}

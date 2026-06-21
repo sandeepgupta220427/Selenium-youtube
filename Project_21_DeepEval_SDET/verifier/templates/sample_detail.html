@@ -1,0 +1,222 @@
+{% extends "_base.html" %}
+{% set nav_active = "samples" %}
+{% block title %}{{ category.title }} — DeepEval Verifier{% endblock %}
+
+{% block styles %}
+.cat-header { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+.cat-header .icon { font-size: 36px; }
+.cat-header h2 { font-size: 28px; font-weight: 800; }
+.cat-desc { font-size: 15px; color: var(--text-dim); margin-bottom: 24px; }
+.cat-nav { display: flex; gap: 8px; margin-bottom: 32px; flex-wrap: wrap; }
+.cat-nav a { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 8px 16px; text-decoration: none; color: var(--text-dim); font-size: 13px; }
+.cat-nav a:hover { border-color: var(--accent-dim); color: var(--text); }
+.cat-nav a.active { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); font-weight: 600; }
+.sample-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px; overflow: hidden; }
+.sample-header { padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.sample-header .left { display: flex; align-items: center; gap: 12px; }
+.sample-header .name { font-size: 16px; font-weight: 700; }
+.diff-badge { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; text-transform: uppercase; }
+.diff-badge.basic { background: var(--green-dim); color: var(--green); }
+.diff-badge.medium { background: var(--yellow-dim); color: var(--yellow); }
+.diff-badge.advanced { background: var(--red-dim); color: var(--red); }
+.metric-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.metric-tag { font-size: 10px; padding: 2px 8px; border-radius: 10px; background: var(--accent-glow); color: var(--accent); }
+.sample-body { padding: 24px; }
+.note-box { background: rgba(234,179,8,0.08); border-left: 3px solid var(--yellow); padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: var(--yellow); line-height: 1.5; border-radius: 0 8px 8px 0; }
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.field { background: var(--bg-input); border-radius: 8px; padding: 16px; }
+.field.full { grid-column: 1 / -1; }
+.field-label { font-size: 11px; color: var(--accent-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.field-value { font-size: 14px; color: var(--text); line-height: 1.6; white-space: pre-wrap; }
+.field-value.query { font-weight: 600; color: var(--accent); }
+.field-value.context { font-size: 12px; color: var(--text-dim); max-height: 150px; overflow-y: auto; font-family: 'SF Mono', Monaco, monospace; }
+.action-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn { padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 6px; }
+.btn-eval { background: var(--accent); color: #0a1a1a; }
+.btn-all { background: var(--purple-dim); border: 1px solid rgba(168,85,247,0.3); color: var(--purple); }
+.btn-open { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-dim); }
+.result-area { margin-top: 20px; display: none; }
+.result-area.visible { display: block; }
+.score-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 20px; border-radius: 8px; font-size: 18px; font-weight: 800; }
+.score-badge.pass { background: var(--green-dim); color: var(--green); }
+.score-badge.fail { background: var(--red-dim); color: var(--red); }
+.result-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--bg-input); border-radius: 6px; margin-bottom: 6px; }
+.result-row .r-name { font-size: 13px; font-weight: 600; min-width: 150px; }
+.result-row .r-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+.result-row .r-fill { height: 100%; }
+.result-row .r-fill.pass { background: var(--green); }
+.result-row .r-fill.fail { background: var(--red); }
+.result-row .r-score { font-size: 13px; font-weight: 700; min-width: 50px; text-align: right; }
+.result-row .r-score.pass { color: var(--green); }
+.result-row .r-score.fail { color: var(--red); }
+.reason-text { background: var(--bg-input); border-radius: 6px; padding: 12px 16px; margin-top: 8px; font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+.spinner-inline { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 768px) { .field-grid { grid-template-columns: 1fr; } }
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="cat-nav">
+        {% for cid, c in categories.items() %}
+        <a href="/samples/{{ cid }}" class="{{ 'active' if cid == category_id else '' }}">{{ c.icon | safe }} {{ c.title }}</a>
+        {% endfor %}
+    </div>
+
+    <div class="cat-header"><span class="icon">{{ category.icon | safe }}</span><h2>{{ category.title }}</h2></div>
+    <p class="cat-desc">{{ category.description }} &mdash; {{ category.samples|length }} pre-loaded test cases ready to evaluate.</p>
+
+    {% for sample in category.samples %}
+    <div class="sample-card" id="card-{{ sample.id }}">
+        <div class="sample-header">
+            <div class="left">
+                <span class="diff-badge {{ sample.difficulty }}">{{ sample.difficulty }}</span>
+                <span class="name">{{ sample.name }}</span>
+            </div>
+            <div class="metric-tags">
+                {% for m in sample.recommended_metrics %}<span class="metric-tag">{{ m.replace('_', ' ') }}</span>{% endfor %}
+            </div>
+        </div>
+
+        <div class="sample-body">
+            {% if sample.get('note') %}<div class="note-box">{{ sample.note }}</div>{% endif %}
+
+            <div class="field-grid">
+                <div class="field full">
+                    <div class="field-label">Query / User Input</div>
+                    <div class="field-value query">{{ sample.query }}</div>
+                </div>
+                <div class="field">
+                    <div class="field-label">Actual Output (LLM Response)</div>
+                    <div class="field-value">{{ sample.actual_output }}</div>
+                </div>
+                <div class="field">
+                    <div class="field-label">Expected Output</div>
+                    <div class="field-value">{{ sample.expected_output if sample.expected_output else '(none)' }}</div>
+                </div>
+                {% if sample.retrieval_context %}
+                <div class="field full">
+                    <div class="field-label">Retrieval Context ({{ sample.retrieval_context|length }} chunk{{ 's' if sample.retrieval_context|length > 1 else '' }})</div>
+                    <div class="field-value context">{{ sample.retrieval_context[0][:500] }}{% if sample.retrieval_context[0]|length > 500 %}...{% endif %}</div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="action-row">
+                <button class="btn btn-eval" onclick="evaluateSample('{{ sample.id }}')" id="eval-btn-{{ sample.id }}">
+                    Evaluate with {{ sample.recommended_metrics[0].replace('_', ' ').title() }}
+                </button>
+                <button class="btn btn-all" onclick="evaluateAllMetrics('{{ sample.id }}')" id="all-btn-{{ sample.id }}">
+                    Run All Recommended Metrics
+                </button>
+                <button class="btn btn-open" onclick="openInVerifier('{{ sample.id }}')">Open in Evaluator</button>
+            </div>
+
+            <div class="result-area" id="result-{{ sample.id }}"></div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    const samplesData = {{ category.samples | tojson }};
+
+    function getSample(id) { return samplesData.find(s => s.id === id); }
+
+    async function evaluateSample(id) {
+        const sample = getSample(id);
+        const btn = document.getElementById('eval-btn-' + id);
+        const area = document.getElementById('result-' + id);
+        btn.disabled = true; btn.innerHTML = '<span class="spinner-inline"></span> Evaluating...';
+        area.classList.add('visible');
+        area.innerHTML = '<div style="color: var(--text-muted); padding: 12px;">Running ' + sample.recommended_metrics[0].replace(/_/g, ' ') + '...</div>';
+        try {
+            const resp = await fetch('/api/evaluate', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    metric: sample.recommended_metrics[0], query: sample.query,
+                    actual_output: sample.actual_output,
+                    expected_output: sample.expected_output || '',
+                    retrieval_context: sample.retrieval_context || [],
+                    threshold: 0.7, model: 'gpt-4o-mini',
+                }),
+            });
+            const data = await resp.json();
+            showSingleResult(id, data);
+        } catch(e) { area.innerHTML = '<div style="color: var(--red);">Error: ' + e.message + '</div>'; }
+        btn.disabled = false; btn.textContent = 'Evaluate with ' + sample.recommended_metrics[0].replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
+
+    async function evaluateAllMetrics(id) {
+        const sample = getSample(id);
+        const btn = document.getElementById('all-btn-' + id);
+        const area = document.getElementById('result-' + id);
+        btn.disabled = true; btn.innerHTML = '<span class="spinner-inline"></span> Running all...';
+        area.classList.add('visible');
+        area.innerHTML = '<div style="color: var(--text-muted); padding: 12px;">Running ' + sample.recommended_metrics.length + ' metrics... 20-40s</div>';
+        try {
+            const resp = await fetch('/api/evaluate-multi', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    metrics: sample.recommended_metrics, query: sample.query,
+                    actual_output: sample.actual_output,
+                    expected_output: sample.expected_output || '',
+                    retrieval_context: sample.retrieval_context || [],
+                    threshold: 0.7, model: 'gpt-4o-mini',
+                }),
+            });
+            const data = await resp.json();
+            showMultiResult(id, data);
+        } catch(e) { area.innerHTML = '<div style="color: var(--red);">Error: ' + e.message + '</div>'; }
+        btn.disabled = false; btn.textContent = 'Run All Recommended Metrics';
+    }
+
+    function showSingleResult(id, data) {
+        const area = document.getElementById('result-' + id);
+        if (!data.success) {
+            area.innerHTML = `<div style="margin-top: 16px;"><span class="score-badge fail">ERROR</span><div class="reason-text">${escapeHtml(data.error)}</div></div>`;
+            return;
+        }
+        const pct = (data.score * 100).toFixed(1);
+        const name = data.metric.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        area.innerHTML = `
+            <div style="margin-top: 16px;">
+                <span class="score-badge ${data.passed ? 'pass' : 'fail'}">${data.passed ? '&#x2705;' : '&#x274C;'} ${name}: ${pct}%</span>
+                <span style="font-size: 12px; color: var(--text-muted); margin-left: 12px;">Time: ${data.elapsed_seconds}s &bull; Judge: GPT-4o-mini</span>
+                ${data.reason ? `<div class="reason-text">${escapeHtml(data.reason)}</div>` : ''}
+            </div>`;
+    }
+
+    function showMultiResult(id, data) {
+        const area = document.getElementById('result-' + id);
+        let html = `
+            <div style="margin-top: 16px; display: flex; gap: 12px; margin-bottom: 12px; align-items: center;">
+                <span class="score-badge ${data.summary.all_passed ? 'pass' : 'fail'}">
+                    ${data.summary.all_passed ? '&#x2705; ALL PASSED' : '&#x274C; ' + data.summary.failed + ' FAILED'}
+                </span>
+                <span style="font-size: 13px; color: var(--text-dim);">${data.summary.passed}/${data.summary.total} passed</span>
+            </div>`;
+        for (const r of data.results) {
+            const pct = ((r.score || 0) * 100).toFixed(1);
+            const name = r.metric.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            html += `<div class="result-row">
+                <span>${r.passed ? '&#x2705;' : '&#x274C;'}</span>
+                <span class="r-name">${name}</span>
+                <div class="r-bar"><div class="r-fill ${r.passed ? 'pass' : 'fail'}" style="width: ${pct}%"></div></div>
+                <span class="r-score ${r.passed ? 'pass' : 'fail'}">${pct}%</span>
+            </div>`;
+        }
+        const first = data.results.find(r => r.reason);
+        if (first) html += `<div class="reason-text"><strong>${first.metric.replace(/_/g, ' ')}:</strong> ${escapeHtml(first.reason)}</div>`;
+        area.innerHTML = html;
+    }
+
+    function openInVerifier(id) {
+        const sample = getSample(id);
+        sessionStorage.setItem('loadSample', JSON.stringify(sample));
+        window.location.href = '/';
+    }
+
+    function escapeHtml(str) { if (!str) return ''; const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+</script>
+{% endblock %}

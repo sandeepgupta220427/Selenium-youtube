@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vector Embeddings Visualizer</title>
+  <meta name="description" content="Interactive teaching app for chunking, embeddings, and vector similarity.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6f1ff;
+      --bg-deep: #ece0ff;
+      --panel: rgba(255, 255, 255, 0.8);
+      --panel-strong: rgba(255, 255, 255, 0.94);
+      --ink: #27184d;
+      --ink-soft: #6b6489;
+      --line: rgba(82, 53, 165, 0.12);
+      --accent: #9a74ff;
+      --accent-deep: #6c49ef;
+      --accent-soft: rgba(108, 73, 239, 0.1);
+      --cyan: #60d1d9;
+      --mint: #aef0d4;
+      --gold: #f7cb7c;
+      --danger: #da667e;
+      --ok: #2c9e69;
+      --warn: #ae7b2a;
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-xl: 0 30px 70px rgba(74, 45, 150, 0.16);
+      --shadow-lg: 0 18px 36px rgba(74, 45, 150, 0.1);
+      --font-head: "Sora", "Avenir Next", sans-serif;
+      --font-body: "Manrope", "Segoe UI Variable Text", sans-serif;
+      --max: 1340px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(154, 116, 255, 0.34), transparent 25%),
+        radial-gradient(circle at 100% 0%, rgba(96, 209, 217, 0.16), transparent 22%),
+        linear-gradient(180deg, var(--bg) 0%, #fbf8ff 100%);
+      color: var(--ink);
+      font-family: var(--font-body);
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body { padding: 22px; }
+
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+
+    .page {
+      max-width: var(--max);
+      margin: 0 auto;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 34px;
+      border-radius: 36px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.86), rgba(255,255,255,0.68)),
+        linear-gradient(135deg, rgba(154,116,255,0.16), rgba(96,209,217,0.12));
+      box-shadow: var(--shadow-xl);
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      pointer-events: none;
+    }
+
+    .hero::before {
+      width: 260px;
+      height: 260px;
+      top: -100px;
+      right: -80px;
+      background: rgba(154,116,255,0.18);
+    }
+
+    .hero::after {
+      width: 220px;
+      height: 220px;
+      left: -80px;
+      bottom: -100px;
+      background: rgba(96,209,217,0.14);
+    }
+
+    .hero-grid,
+    .control-grid,
+    .stats-grid,
+    .insight-grid,
+    .chunk-grid,
+    .viz-grid,
+    .lesson-grid,
+    .footer-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .hero-grid,
+    .control-grid,
+    .viz-grid,
+    .footer-grid {
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: start;
+    }
+
+    .stats-grid,
+    .lesson-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .insight-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .chunk-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(108,73,239,0.1);
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      font-family: var(--font-head);
+      letter-spacing: -0.04em;
+      color: var(--ink);
+    }
+
+    h1 {
+      font-size: clamp(2.6rem, 4.8vw, 4.8rem);
+      line-height: 1.02;
+      margin-top: 18px;
+      max-width: 11ch;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      margin-bottom: 14px;
+    }
+
+    h3 {
+      font-size: 1.08rem;
+    }
+
+    p {
+      margin: 0;
+      line-height: 1.72;
+      color: var(--ink-soft);
+    }
+
+    .hero p {
+      max-width: 62ch;
+      font-size: 1.06rem;
+      margin-top: 16px;
+    }
+
+    .card,
+    .panel,
+    .metric,
+    .chunk-card,
+    .matrix-card,
+    .plot-card,
+    .lesson-card,
+    .provider-card,
+    .helper-card {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .panel,
+    .card,
+    .matrix-card,
+    .plot-card,
+    .lesson-card,
+    .provider-card,
+    .helper-card {
+      padding: 22px;
+    }
+
+    .metric {
+      padding: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(245,240,255,0.88));
+    }
+
+    .metric strong {
+      display: block;
+      font-family: var(--font-head);
+      font-size: 1.8rem;
+      letter-spacing: -0.05em;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .metric span {
+      color: var(--ink-soft);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .stack { display: grid; gap: 14px; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+    .badges { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+    .badge {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(108,73,239,0.1);
+      color: var(--ink);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .button,
+    .chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
+    }
+
+    .button {
+      height: 50px;
+      padding: 0 18px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      color: #fff;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      box-shadow: 0 16px 32px rgba(108,73,239,0.22);
+    }
+
+    .button.secondary {
+      background: rgba(255,255,255,0.88);
+      color: var(--ink);
+      box-shadow: none;
+    }
+
+    .button:hover,
+    .chip:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 30px rgba(74,45,150,0.14);
+    }
+
+    .chip {
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.9);
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .control-card {
+      padding: 24px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(180deg, rgba(37,23,80,0.96), rgba(69,41,164,0.92));
+      color: #fff;
+      box-shadow: 0 28px 46px rgba(62, 34, 149, 0.28);
+    }
+
+    .control-card p,
+    .control-card label,
+    .control-card .muted,
+    .control-card .hint {
+      color: rgba(255,255,255,0.78);
+    }
+
+    .control-card h2,
+    .control-card h3 {
+      color: #fff;
+    }
+
+    .field { display: grid; gap: 8px; }
+    .field-row { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+
+    label {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    textarea,
+    select,
+    input[type="text"] {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 18px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      outline: none;
+    }
+
+    textarea::placeholder,
+    input[type="text"]::placeholder {
+      color: rgba(255,255,255,0.54);
+    }
+
+    select option {
+      color: #111;
+    }
+
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+    }
+
+    .range-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .range-value {
+      min-width: 56px;
+      text-align: right;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .provider-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .provider-card {
+      padding: 16px 18px;
+      background: rgba(255,255,255,0.08);
+      box-shadow: none;
+      border-color: rgba(255,255,255,0.12);
+    }
+
+    .provider-card strong {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.96rem;
+      letter-spacing: -0.02em;
+    }
+
+    .provider-card small {
+      display: block;
+      margin-top: 8px;
+      line-height: 1.55;
+      color: rgba(255,255,255,0.72);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(174, 240, 212, 0.12);
+      color: #d8fff0;
+    }
+
+    .status-pill.warn {
+      background: rgba(247, 203, 124, 0.14);
+      color: #ffe6b8;
+    }
+
+    .muted { color: var(--ink-soft); font-size: 0.92rem; }
+    .hint { font-size: 0.84rem; }
+
+    .section {
+      margin-top: 22px;
+      padding: 26px;
+      border-radius: 30px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.72);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .section-note {
+      max-width: 54ch;
+      font-size: 0.94rem;
+    }
+
+    .chunk-card {
+      padding: 20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(243,238,255,0.9));
+    }
+
+    .chunk-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .chunk-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .meta-pill {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(108,73,239,0.08);
+      color: var(--ink);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .sparkline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(6px, 1fr));
+      align-items: end;
+      gap: 4px;
+      height: 70px;
+      margin-top: 16px;
+    }
+
+    .spark-bar {
+      border-radius: 999px 999px 4px 4px;
+      background: linear-gradient(180deg, var(--cyan), var(--accent-deep));
+      min-height: 4px;
+    }
+
+    .chunk-card.active {
+      border-color: rgba(108,73,239,0.28);
+      box-shadow: 0 22px 42px rgba(74,45,150,0.14);
+      transform: translateY(-2px);
+    }
+
+    .chunk-card button {
+      margin-top: 16px;
+      background: transparent;
+      border: none;
+      color: var(--accent-deep);
+      font-weight: 800;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .heatmap {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .heatmap-row {
+      display: grid;
+      grid-template-columns: 80px repeat(var(--chunk-count), minmax(34px, 1fr));
+      gap: 8px;
+      align-items: center;
+    }
+
+    .heatmap-label {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    .heatmap-cell {
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--ink);
+      border: 1px solid rgba(82,53,165,0.06);
+    }
+
+    .plot-wrap {
+      margin-top: 18px;
+      border-radius: 18px;
+      border: 1px dashed rgba(82,53,165,0.16);
+      background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(244,239,255,0.88));
+      padding: 16px;
+    }
+
+    svg { width: 100%; height: auto; display: block; }
+
+    .dim-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .dim-card {
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(108,73,239,0.05);
+      padding: 10px;
+    }
+
+    .dim-card strong {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+    }
+
+    .dim-card span {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+
+    .helper-list,
+    .lesson-list {
+      list-style: none;
+      padding: 0;
+      margin: 16px 0 0;
+    }
+
+    .helper-list li,
+    .lesson-list li {
+      position: relative;
+      padding-left: 18px;
+      margin-top: 10px;
+      color: var(--ink-soft);
+      line-height: 1.58;
+    }
+
+    .helper-list li::before,
+    .lesson-list li::before {
+      content: "";
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+      left: 0;
+      top: 0.62em;
+    }
+
+    .notice {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(96,209,217,0.08);
+      border: 1px solid rgba(96,209,217,0.16);
+      color: var(--ink-soft);
+    }
+
+    .error {
+      display: none;
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(218,102,126,0.1);
+      border: 1px solid rgba(218,102,126,0.16);
+      color: #8e3043;
+      font-weight: 700;
+    }
+
+    .error.show { display: block; }
+
+    .loading {
+      display: none;
+      margin-top: 14px;
+      color: rgba(255,255,255,0.86);
+      font-weight: 700;
+    }
+
+    .loading.show { display: block; }
+
+    .empty {
+      padding: 28px;
+      border-radius: 22px;
+      border: 1px dashed rgba(82,53,165,0.16);
+      color: var(--ink-soft);
+      background: rgba(255,255,255,0.64);
+    }
+
+    .footer-grid { margin-top: 18px; }
+
+    @media (max-width: 1100px) {
+      .hero-grid,
+      .control-grid,
+      .viz-grid,
+      .footer-grid,
+      .chunk-grid,
+      .insight-grid,
+      .stats-grid,
+      .lesson-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .dim-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 14px; }
+      .hero, .section { padding: 22px; }
+      .hero-grid,
+      .control-grid,
+      .viz-grid,
+      .footer-grid,
+      .chunk-grid,
+      .insight-grid,
+      .stats-grid,
+      .lesson-grid,
+      .field-row,
+      .dim-grid {
+        grid-template-columns: 1fr;
+      }
+      .heatmap-row {
+        grid-template-columns: 72px repeat(var(--chunk-count), minmax(28px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Embeddings Playground</div>
+          <h1>Watch text become chunks, vectors, and similarity signals.</h1>
+          <p>This project explains one of the hardest RAG concepts visually. Paste any QA story, PRD, bug summary, or test scenario. The app chunks it, generates embeddings, and shows what the vector space is doing in a way students can actually follow.</p>
+          <div class="actions">
+            <button class="chip" data-sample="login">Sample: Login Story</button>
+            <button class="chip" data-sample="checkout">Sample: Checkout Flow</button>
+            <button class="chip" data-sample="api">Sample: API Defect Report</button>
+          </div>
+          <div class="badges">
+            <span class="badge">Chunking first</span>
+            <span class="badge">Real embeddings supported</span>
+            <span class="badge">Heatmap + 2D projection</span>
+            <span class="badge">Built for teaching</span>
+          </div>
+        </div>
+        <div class="helper-card">
+          <h2>How to explain this live</h2>
+          <ul class="helper-list">
+            <li>Chunking is how we keep each vector focused on a manageable slice of meaning.</li>
+            <li>An embedding is a numeric signature. Similar meanings usually sit closer together.</li>
+            <li>The heatmap compares chunks using cosine similarity.</li>
+            <li>The 2D plot is only a teaching projection. The real vector still has dozens or thousands of dimensions.</li>
+          </ul>
+          <div class="notice">For workshops, start with <strong>Deterministic Demo</strong> or <strong>Ollama / Nomic</strong>. Switch to OpenAI or Mistral when you want a real hosted provider.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="control-grid">
+        <div class="control-card">
+          <div class="stack">
+            <div>
+              <h2>Input + provider</h2>
+              <p>Use any text block. Longer text creates more chunks, which makes the heatmap and projection easier to teach.</p>
+            </div>
+
+            <div class="field">
+              <label for="source-text">Text to embed</label>
+              <textarea id="source-text" placeholder="Paste a user story, PRD section, bug report, or test design note here."></textarea>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="provider">Embedding provider</label>
+                <select id="provider"></select>
+              </div>
+              <div class="field">
+                <label for="model">Model override</label>
+                <input id="model" type="text" placeholder="Leave blank for provider default">
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="chunk-size">Chunk size (words)</label>
+                <div class="range-line">
+                  <input id="chunk-size" type="range" min="20" max="260" value="70">
+                  <span class="range-value" id="chunk-size-value">70</span>
+                </div>
+              </div>
+              <div class="field">
+                <label for="overlap">Overlap (words)</label>
+                <div class="range-line">
+                  <input id="overlap" type="range" min="0" max="120" value="18">
+                  <span class="range-value" id="overlap-value">18</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="button" id="visualize-button">Generate vectors</button>
+              <button class="button secondary" id="clear-button">Clear</button>
+            </div>
+            <div class="loading" id="loading">Generating chunks and embeddings...</div>
+            <div class="error" id="error-box"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="section-head">
+            <div>
+              <h2>Provider status</h2>
+              <p class="section-note">This panel shows what is available on the current machine or via configured API keys.</p>
+            </div>
+          </div>
+          <div class="provider-list" id="provider-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Document summary</h2>
+          <p class="section-note">Start here when teaching. This gives students the input size, chunk count, vector dimension, and the first few embedding values.</p>
+        </div>
+      </div>
+      <div class="stats-grid" id="summary-grid">
+        <div class="empty">Run the visualizer to populate the summary cards.</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <h2>Chunk view</h2>
+          <p class="section-note">Each chunk is a separate retrieval unit. Click a chunk to inspect its embedding preview.</p>
+        </div>
+      </div>
+      <div class="chunk-grid" id="chunk-grid">
+        <div class="empty">Chunks will appear here after generation.</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="viz-grid">
+        <div class="matrix-card">
+          <div class="section-head">
+            <div>
+              <h2>Similarity heatmap</h2>
+              <p class="section-note">Darker cells indicate more similar chunk vectors.</p>
+            </div>
+          </div>
+          <div id="heatmap" class="heatmap">
+            <div class="empty">The chunk-to-chunk similarity matrix will render here.</div>
+          </div>
+        </div>
+
+        <div class="plot-card">
+          <div class="section-head">
+            <div>
+              <h2>2D teaching projection</h2>
+              <p class="section-note">This compresses the high-dimensional embeddings into a simple map. Nearby points usually indicate related chunks.</p>
+            </div>
+          </div>
+          <div class="plot-wrap" id="projection-wrap">
+            <div class="empty">The chunk map will render here.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="footer-grid">
+        <div class="panel">
+          <h2>Selected chunk inspector</h2>
+          <p class="section-note">Use this to show students what a chunk-level vector looks like without overwhelming them with all dimensions.</p>
+          <div id="chunk-detail" class="empty" style="margin-top: 16px;">Select a chunk after running the visualizer.</div>
+        </div>
+
+        <div class="panel">
+          <h2>Teaching notes</h2>
+          <div class="lesson-grid" id="lesson-grid">
+            <div class="lesson-card"><h3>1. Split</h3><p>Chunking creates small retrieval units from longer documents.</p></div>
+            <div class="lesson-card"><h3>2. Embed</h3><p>Each chunk becomes a vector so machines can compare meaning numerically.</p></div>
+            <div class="lesson-card"><h3>3. Compare</h3><p>Cosine similarity shows which chunks are close in vector space.</p></div>
+            <div class="lesson-card"><h3>4. Retrieve</h3><p>Later, a user query can be embedded and matched against these chunk vectors.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const sampleTexts = {
+      login: `User Story: As a returning customer, I want to log in with my email and password so I can access my saved addresses and previous orders. Acceptance Criteria: The login form should validate empty email and password fields. The email field should reject malformed email addresses. A valid user with the correct password should be redirected to the account dashboard. An invalid password should show an inline error without exposing whether the email exists. After five failed attempts, the account should be temporarily locked and the user should see a security message. The Remember Me option should preserve the session for seven days on the same device.`,
+      checkout: `Feature: Checkout shipping and payment. A shopper can add multiple items to the cart, apply a coupon, choose a shipping speed, and complete payment using card or wallet. If the address is incomplete, the Continue button should remain disabled. If the coupon is expired, the discount should not apply and an explanation should appear. If the payment gateway times out, the order should not be created and the user should see a retry option. Successful orders should show the order number, tax, shipping fee, and estimated delivery date.`,
+      api: `Bug Report Summary: The Create Booking API intermittently returns HTTP 500 when the request payload contains optional passenger metadata and a promotional code. The issue reproduces more often during peak traffic. The current logs show a null pointer in the pricing enrichment module. When the API fails, no booking record should be persisted and the client should receive a structured error response. Test focus should include schema validation, concurrency, idempotency keys, promo code edge cases, and rollback verification.`
+    };
+
+    const sourceText = document.getElementById('source-text');
+    const providerSelect = document.getElementById('provider');
+    const modelInput = document.getElementById('model');
+    const chunkSizeInput = document.getElementById('chunk-size');
+    const overlapInput = document.getElementById('overlap');
+    const chunkSizeValue = document.getElementById('chunk-size-value');
+    const overlapValue = document.getElementById('overlap-value');
+    const visualizeButton = document.getElementById('visualize-button');
+    const clearButton = document.getElementById('clear-button');
+    const providerList = document.getElementById('provider-list');
+    const summaryGrid = document.getElementById('summary-grid');
+    const chunkGrid = document.getElementById('chunk-grid');
+    const heatmap = document.getElementById('heatmap');
+    const projectionWrap = document.getElementById('projection-wrap');
+    const chunkDetail = document.getElementById('chunk-detail');
+    const errorBox = document.getElementById('error-box');
+    const loading = document.getElementById('loading');
+
+    let currentData = null;
+
+    function setRangeLabels() {
+      chunkSizeValue.textContent = chunkSizeInput.value;
+      overlapValue.textContent = overlapInput.value;
+    }
+
+    function showError(message) {
+      errorBox.textContent = message;
+      errorBox.classList.add('show');
+    }
+
+    function clearError() {
+      errorBox.textContent = '';
+      errorBox.classList.remove('show');
+    }
+
+    function renderProviders(payload) {
+      providerSelect.innerHTML = '';
+      providerList.innerHTML = '';
+      const providers = payload.providers || [];
+      const defaultProvider = payload.default_provider || 'demo';
+
+      providers.forEach((provider) => {
+        const option = document.createElement('option');
+        option.value = provider.id;
+        option.textContent = provider.label + ' (' + provider.default_model + ')';
+        providerSelect.appendChild(option);
+
+        const card = document.createElement('div');
+        card.className = 'provider-card';
+        const statusClass = provider.available ? '' : 'warn';
+        const statusText = provider.available ? 'Ready' : 'Needs setup';
+        card.innerHTML = `
+          <strong>${provider.label}<span class="status-pill ${statusClass}">${statusText}</span></strong>
+          <small>${provider.description}</small>
+          <small>${provider.hint}</small>
+        `;
+        providerList.appendChild(card);
+      });
+
+      providerSelect.value = providers.find((provider) => provider.id === defaultProvider)?.id || 'demo';
+      updateModelPlaceholder(providers);
+    }
+
+    function updateModelPlaceholder(providers) {
+      const provider = providers.find((item) => item.id === providerSelect.value);
+      modelInput.placeholder = provider ? provider.default_model : 'Leave blank for provider default';
+    }
+
+    function metricCard(label, value, note) {
+      return `
+        <div class="metric">
+          <strong>${value}</strong>
+          <span>${label}<br>${note}</span>
+        </div>
+      `;
+    }
+
+    function renderSummary(data) {
+      const summary = data.summary;
+      summaryGrid.innerHTML = [
+        metricCard('Input size', summary.input_words + ' words', summary.input_characters + ' characters'),
+        metricCard('Chunks', summary.chunk_count, data.chunking.chunk_size_words + ' word windows'),
+        metricCard('Vector dimension', summary.embedding_dimension, summary.provider + ' / ' + summary.model),
+        metricCard('Average chunk size', summary.avg_chunk_words, 'overlap ' + data.chunking.overlap_words + ' words')
+      ].join('');
+    }
+
+    function sparklineBars(values) {
+      return `<div class="sparkline">${values.map((value) => {
+        const height = Math.max(6, Math.round((Math.abs(value) / 0.4) * 64));
+        return `<span class="spark-bar" style="height:${Math.min(height, 70)}px"></span>`;
+      }).join('')}</div>`;
+    }
+
+    function renderChunks(data) {
+      chunkGrid.innerHTML = '';
+      data.chunks.forEach((chunk, index) => {
+        const card = document.createElement('div');
+        card.className = 'chunk-card' + (index === 0 ? ' active' : '');
+        card.dataset.chunkId = chunk.id;
+        card.innerHTML = `
+          <div class="chunk-head">
+            <div>
+              <div class="eyebrow">Chunk ${chunk.id}</div>
+              <h3>Words ${chunk.word_start}–${chunk.word_end}</h3>
+            </div>
+            <div class="muted">${chunk.dimension} dims</div>
+          </div>
+          <p>${chunk.text}</p>
+          <div class="chunk-meta">
+            <span class="meta-pill">${chunk.word_count} words</span>
+            <span class="meta-pill">${chunk.character_count} chars</span>
+            <span class="meta-pill">norm ${chunk.vector_norm}</span>
+          </div>
+          ${sparklineBars(chunk.sparkline)}
+          <button type="button">Inspect embedding head</button>
+        `;
+        card.addEventListener('click', () => selectChunk(chunk.id));
+        chunkGrid.appendChild(card);
+      });
+      selectChunk(data.chunks[0]?.id);
+    }
+
+    function heatColor(value) {
+      const normalized = Math.max(0, Math.min(1, (value + 1) / 2));
+      const hue = 268 - Math.round(normalized * 88);
+      const lightness = 96 - Math.round(normalized * 42);
+      return `hsl(${hue}deg 78% ${lightness}%)`;
+    }
+
+    function renderHeatmap(data) {
+      const rows = data.similarity_matrix;
+      heatmap.innerHTML = '';
+      if (!rows.length) {
+        heatmap.innerHTML = '<div class="empty">Similarity data is not available.</div>';
+        return;
+      }
+      heatmap.style.setProperty('--chunk-count', rows.length);
+      rows.forEach((row, rowIndex) => {
+        const rowEl = document.createElement('div');
+        rowEl.className = 'heatmap-row';
+        rowEl.innerHTML = `<div class="heatmap-label">Chunk ${rowIndex + 1}</div>` + row.map((value) => {
+          return `<div class="heatmap-cell" style="background:${heatColor(value)}">${value.toFixed(2)}</div>`;
+        }).join('');
+        heatmap.appendChild(rowEl);
+      });
+    }
+
+    function renderProjection(data) {
+      const points = data.projection.points || [];
+      if (!points.length) {
+        projectionWrap.innerHTML = '<div class="empty">Projection data is not available.</div>';
+        return;
+      }
+      projectionWrap.innerHTML = `
+        <svg viewBox="0 0 100 100" role="img" aria-label="Chunk projection">
+          <defs>
+            <linearGradient id="pointFill" x1="0" x2="1">
+              <stop offset="0%" stop-color="#60d1d9"></stop>
+              <stop offset="100%" stop-color="#6c49ef"></stop>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="96" height="96" rx="10" fill="rgba(108,73,239,0.03)" stroke="rgba(82,53,165,0.14)"></rect>
+          ${points.map((point) => `
+            <g>
+              <circle cx="${point.x}" cy="${point.y}" r="4.1" fill="url(#pointFill)"></circle>
+              <text x="${point.x}" y="${Math.max(8, point.y - 6)}" text-anchor="middle" font-size="4.2" fill="#27184d" font-family="Manrope, sans-serif">C${point.id}</text>
+            </g>
+          `).join('')}
+        </svg>
+      `;
+    }
+
+    function renderChunkDetail(chunk) {
+      if (!chunk) {
+        chunkDetail.innerHTML = 'Select a chunk after running the visualizer.';
+        return;
+      }
+      chunkDetail.innerHTML = `
+        <div class="stack">
+          <div>
+            <div class="eyebrow">Chunk ${chunk.id}</div>
+            <h3 style="margin-top: 10px;">Embedding preview</h3>
+            <p style="margin-top: 10px;">This shows the first 16 dimensions of the chunk vector, plus a compressed sparkline across the whole embedding.</p>
+          </div>
+          <div class="notice">Chunk text: ${chunk.text}</div>
+          ${sparklineBars(chunk.sparkline)}
+          <div class="dim-grid">
+            ${chunk.embedding_head.map((value, index) => `
+              <div class="dim-card">
+                <strong>dim[${index}]</strong>
+                <span>${value}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectChunk(chunkId) {
+      if (!currentData) {
+        return;
+      }
+      const chunk = currentData.chunks.find((item) => item.id === chunkId);
+      document.querySelectorAll('.chunk-card').forEach((card) => {
+        card.classList.toggle('active', Number(card.dataset.chunkId) === chunkId);
+      });
+      renderChunkDetail(chunk);
+    }
+
+    async function visualize() {
+      clearError();
+      const text = sourceText.value.trim();
+      if (!text) {
+        showError('Paste some text first. A short QA story is enough to start.');
+        return;
+      }
+
+      const chunkSize = Number(chunkSizeInput.value);
+      const overlap = Number(overlapInput.value);
+      if (overlap >= chunkSize) {
+        showError('Overlap must be smaller than chunk size.');
+        return;
+      }
+
+      loading.classList.add('show');
+      visualizeButton.disabled = true;
+
+      try {
+        const response = await fetch('/api/visualize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            text,
+            provider: providerSelect.value,
+            model: modelInput.value.trim() || null,
+            chunk_size: chunkSize,
+            overlap,
+            max_chunks: 10,
+          }),
+        });
+
+        const payload = await response.json();
+        if (!response.ok) {
+          throw new Error(payload.detail || 'Unable to generate embeddings.');
+        }
+
+        currentData = payload;
+        renderSummary(payload);
+        renderChunks(payload);
+        renderHeatmap(payload);
+        renderProjection(payload);
+      } catch (error) {
+        showError(error.message || 'Unable to generate embeddings.');
+      } finally {
+        loading.classList.remove('show');
+        visualizeButton.disabled = false;
+      }
+    }
+
+    async function bootstrap() {
+      setRangeLabels();
+      sourceText.value = sampleTexts.login;
+      try {
+        const response = await fetch('/api/providers');
+        const payload = await response.json();
+        renderProviders(payload);
+        providerSelect.addEventListener('change', () => updateModelPlaceholder(payload.providers || []));
+      } catch (error) {
+        showError('Unable to load provider configuration.');
+      }
+    }
+
+    document.querySelectorAll('[data-sample]').forEach((button) => {
+      button.addEventListener('click', () => {
+        sourceText.value = sampleTexts[button.dataset.sample];
+      });
+    });
+
+    chunkSizeInput.addEventListener('input', setRangeLabels);
+    overlapInput.addEventListener('input', setRangeLabels);
+    visualizeButton.addEventListener('click', visualize);
+    clearButton.addEventListener('click', () => {
+      sourceText.value = '';
+      modelInput.value = '';
+      clearError();
+    });
+
+    bootstrap();
+  </script>
+</body>
+</html>

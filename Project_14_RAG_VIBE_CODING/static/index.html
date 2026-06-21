@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modular RAG Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#0f172a',
+                        darker: '#020617',
+                        primary: '#3b82f6',
+                        secondary: '#8b5cf6',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .upload-area {
+            border: 2px dashed rgba(59, 130, 246, 0.5);
+            transition: all 0.3s ease;
+        }
+        .upload-area.dragover {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.1);
+        }
+        
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chat-container::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5); 
+        }
+        .chat-container::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5); 
+            border-radius: 4px;
+        }
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 92, 246, 0.8); 
+        }
+
+        .bot-message {
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.6) 0%, rgba(59, 130, 246, 0.2) 100%);
+            border-left: 4px solid #3b82f6;
+        }
+        .user-message {
+            background: linear-gradient(135deg, rgba(88, 28, 135, 0.6) 0%, rgba(139, 92, 246, 0.2) 100%);
+            border-right: 4px solid #8b5cf6;
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-6">
+    
+    <div class="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Header -->
+        <div class="col-span-1 md:col-span-3 text-center mb-4">
+            <h1 class="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary mb-2">
+                Modular RAG System
+            </h1>
+            <p class="text-slate-400">Upload documents and query your API, UI, and Performance databases.</p>
+        </div>
+
+        <!-- Left Side: Upload & Ingestion -->
+        <div class="col-span-1 glass-panel rounded-2xl p-6 flex flex-col h-full shadow-2xl">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-cloud-upload-alt text-primary"></i> Document Ingestion
+            </h2>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-slate-300 mb-2">Select Target Domain</label>
+                <select id="domainSelect" class="w-full bg-darker border border-slate-700 rounded-lg p-3 text-white focus:outline-none focus:border-primary transition-colors">
+                    <option value="api">API Context (api_docs)</option>
+                    <option value="ui">UI Context (ui_docs)</option>
+                    <option value="perf">Performance Context (perf_docs)</option>
+                </select>
+            </div>
+
+            <div id="dropZone" class="upload-area rounded-xl p-8 text-center cursor-pointer flex-grow flex flex-col items-center justify-center group mb-4">
+                <i class="fas fa-file-pdf text-4xl text-slate-500 group-hover:text-primary mb-3 transition-colors"></i>
+                <p class="text-slate-300 font-medium">Drag & Drop files here</p>
+                <p class="text-slate-500 text-sm mt-1">or click to browse</p>
+                <p class="text-slate-600 text-xs mt-3">Supports: .pdf, .csv, .txt</p>
+                <input type="file" id="fileInput" class="hidden" accept=".pdf,.csv,.txt,.md">
+            </div>
+
+            <div id="uploadStatus" class="hidden rounded-lg p-3 text-sm font-medium items-center justify-center gap-2">
+                <!-- Status applied here via JS -->
+            </div>
+            
+            <div id="uploadProgressContainer" class="hidden w-full bg-slate-800 rounded-full h-2 mb-4 mt-2">
+              <div id="uploadProgressBar" class="bg-gradient-to-r from-primary to-secondary h-2 rounded-full" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Right Side: Chat Interface -->
+        <div class="col-span-1 md:col-span-2 glass-panel rounded-2xl flex flex-col h-[70vh] shadow-2xl overflow-hidden">
+            <!-- Chat Header -->
+            <div class="bg-darker/50 p-4 border-b border-slate-800 flex justify-between items-center">
+                <h2 class="text-xl font-bold flex items-center gap-2">
+                    <i class="fas fa-robot text-secondary"></i> RAG Assistant
+                </h2>
+                <div class="flex items-center gap-2 text-xs text-slate-400">
+                    <span class="flex h-2 w-2 rounded-full bg-green-500"></span> System Online
+                </div>
+            </div>
+
+            <!-- Chat Messages -->
+            <div id="chatBox" class="chat-container flex-grow overflow-y-auto p-6 space-y-4 flex flex-col">
+                <!-- Intro Message -->
+                <div class="bot-message rounded-2xl p-4 max-w-[85%] self-start shadow-md">
+                    <p class="text-sm">Hello! I'm your Modular RAG assistant. Ask me questions about your API, UI, or Performance documents, and I'll route them to the appropriate database to find the answer.</p>
+                </div>
+            </div>
+
+            <!-- Chat Input -->
+            <div class="p-4 bg-darker/50 border-t border-slate-800">
+                <form id="chatForm" class="flex gap-3">
+                    <div class="relative flex-grow">
+                        <input type="text" id="chatInput" placeholder="Ask about an endpoint, a UI form, or a stress test..." class="w-full bg-slate-900 border border-slate-700 rounded-full py-3 px-5 text-white focus:outline-none focus:border-secondary transition-colors pr-12">
+                    </div>
+                    <button type="submit" id="chatSubmitBtn" class="bg-gradient-to-r from-primary to-secondary hover:from-blue-600 hover:to-purple-600 text-white rounded-full w-12 h-12 flex items-center justify-center transition-transform hover:scale-105 disabled:opacity-50">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const domainSelect = document.getElementById('domainSelect');
+        const uploadStatus = document.getElementById('uploadStatus');
+        const uploadProgressContainer = document.getElementById('uploadProgressContainer');
+        const uploadProgressBar = document.getElementById('uploadProgressBar');
+        
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+        const chatBox = document.getElementById('chatBox');
+        const chatSubmitBtn = document.getElementById('chatSubmitBtn');
+
+        // ==== Drag & Drop Upload Logic ====
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+        });
+
+        dropZone.addEventListener('drop', handleDrop, false);
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            if (files.length === 0) return;
+            uploadFile(files[0]);
+        }
+
+        async function uploadFile(file) {
+            const domain = domainSelect.value;
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('domain', domain);
+
+            // UI changes during upload
+            dropZone.classList.add('opacity-50', 'pointer-events-none');
+            uploadStatus.className = 'flex rounded-lg p-3 text-sm font-medium items-center justify-center gap-2 bg-blue-900/50 text-blue-200 border border-blue-800';
+            uploadStatus.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Ingesting into ${domain.toUpperCase()} DB...`;
+            uploadProgressContainer.classList.remove('hidden');
+            uploadProgressBar.style.width = '50%';
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                uploadProgressBar.style.width = '100%';
+                
+                const result = await response.json();
+
+                if (response.ok) {
+                     uploadStatus.className = 'flex rounded-lg p-3 text-sm font-medium items-center justify-center gap-2 bg-green-900/50 text-green-200 border border-green-800';
+                     uploadStatus.innerHTML = `<i class="fas fa-check-circle"></i> Ingested ${result.chunks_inserted} chunks!`;
+                } else {
+                     throw new Error(result.detail || "Upload failed");
+                }
+            } catch (error) {
+                uploadStatus.className = 'flex rounded-lg p-3 text-sm font-medium items-center justify-center gap-2 bg-red-900/50 text-red-200 border border-red-800';
+                uploadStatus.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${error.message}`;
+                uploadProgressBar.style.width = '0%';
+            } finally {
+                dropZone.classList.remove('opacity-50', 'pointer-events-none');
+                fileInput.value = ''; // Reset input
+                setTimeout(() => {
+                    uploadStatus.classList.add('hidden');
+                    uploadProgressContainer.classList.add('hidden');
+                    uploadProgressBar.style.width = '0%';
+                }, 4000);
+            }
+        }
+
+        // ==== Chat Interface Logic ====
+
+        function addMessage(text, isUser = false, domainRouted = null) {
+            const wrapper = document.createElement('div');
+            wrapper.className = isUser ? 'user-message rounded-2xl p-4 max-w-[85%] shadow-md slide-in' : 'bot-message rounded-2xl p-4 max-w-[85%] self-start shadow-md slide-in';
+            
+            let html = '';
+            
+            if (!isUser && domainRouted) {
+                const domainColors = {
+                    'api': 'text-blue-400',
+                    'ui': 'text-pink-400',
+                    'perf': 'text-orange-400'
+                };
+                const colorClass = domainColors[domainRouted] || 'text-slate-400';
+                html += `<div class="text-xs ${colorClass} font-bold mb-1 flex items-center gap-1 uppercase tracking-wider">
+                            <i class="fas fa-network-wired text-[10px]"></i> Routed via ${domainRouted}
+                         </div>`;
+            }
+            
+            // Basic markdown-like handling for newlines
+            const formattedText = text.replace(/\n/g, '<br>');
+            html += `<p class="text-sm font-light leading-relaxed">${formattedText}</p>`;
+            
+            wrapper.innerHTML = html;
+            chatBox.appendChild(wrapper);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function setChatLoading(isLoading) {
+            chatInput.disabled = isLoading;
+            chatSubmitBtn.disabled = isLoading;
+            if (isLoading) {
+                const loadingHtml = `<div id="typingIndicator" class="bot-message rounded-2xl p-4 max-w-[30%] self-start shadow-md flex gap-2 items-center">
+                    <div class="h-2 w-2 rounded-full bg-primary animate-bounce"></div>
+                    <div class="h-2 w-2 rounded-full bg-primary animate-bounce" style="animation-delay: 0.2s"></div>
+                    <div class="h-2 w-2 rounded-full bg-primary animate-bounce" style="animation-delay: 0.4s"></div>
+                </div>`;
+                chatBox.insertAdjacentHTML('beforeend', loadingHtml);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } else {
+                const indicator = document.getElementById('typingIndicator');
+                if (indicator) indicator.remove();
+            }
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = chatInput.value.trim();
+            if (!query) return;
+
+            // Display user message
+            addMessage(query, true);
+            chatInput.value = '';
+            
+            setChatLoading(true);
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    addMessage(result.answer, false, result.domain_routed);
+                } else {
+                    addMessage(`Error: ${result.detail}`, false);
+                }
+            } catch (error) {
+                addMessage(`Connection failed: ${error.message}`, false);
+            } finally {
+                setChatLoading(false);
+            }
+        });
+    </script>
+</body>
+</html>

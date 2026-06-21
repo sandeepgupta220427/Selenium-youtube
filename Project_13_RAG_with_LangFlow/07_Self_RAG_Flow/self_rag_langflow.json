@@ -1,0 +1,239 @@
+{
+    "id": "self-rag-reflection",
+    "data": {
+        "nodes": [
+            {
+                "id": "ChatInput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 100,
+                    "y": 300
+                },
+                "data": {
+                    "type": "ChatInput",
+                    "node": {
+                        "display_name": "Chat Input"
+                    }
+                }
+            },
+            {
+                "id": "RetrieveDecision-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 400,
+                    "y": 300
+                },
+                "data": {
+                    "type": "Prompt",
+                    "node": {
+                        "display_name": "Should Retrieve? (Decision)",
+                        "template": {
+                            "template": {
+                                "type": "str",
+                                "value": "Analyze this question and decide if you need to search external documents to answer it accurately.\n\nQuestion: {question}\n\nIf the question requires specific factual knowledge, technical details, or references, respond with YES.\nIf you can answer confidently from general knowledge, respond with NO.\n\nDecision (YES or NO):"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "DecisionLLM-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 700,
+                    "y": 200
+                },
+                "data": {
+                    "type": "ChatOpenAI",
+                    "node": {
+                        "display_name": "Decision LLM",
+                        "template": {
+                            "model_name": {
+                                "type": "str",
+                                "value": "gpt-4o-mini"
+                            },
+                            "temperature": {
+                                "type": "float",
+                                "value": 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "Router-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1000,
+                    "y": 300
+                },
+                "data": {
+                    "type": "ConditionalRouter",
+                    "node": {
+                        "display_name": "Retrieve or Direct",
+                        "template": {
+                            "conditions": {
+                                "type": "list",
+                                "value": [
+                                    {
+                                        "condition": "contains 'YES'",
+                                        "target": "Retriever"
+                                    },
+                                    {
+                                        "condition": "default",
+                                        "target": "DirectAnswer"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "Retriever-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1300,
+                    "y": 200
+                },
+                "data": {
+                    "type": "Retriever",
+                    "node": {
+                        "display_name": "Vector Store Retriever",
+                        "template": {
+                            "search_kwargs": {
+                                "type": "dict",
+                                "value": {
+                                    "k": 4
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "GeneratePrompt-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1600,
+                    "y": 200
+                },
+                "data": {
+                    "type": "Prompt",
+                    "node": {
+                        "display_name": "Generate with Context",
+                        "template": {
+                            "template": {
+                                "type": "str",
+                                "value": "Answer using ONLY the provided context.\n\nContext: {context}\nQuestion: {question}\n\nAnswer:"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "GroundednessCheck-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1900,
+                    "y": 200
+                },
+                "data": {
+                    "type": "Prompt",
+                    "node": {
+                        "display_name": "Groundedness Check",
+                        "template": {
+                            "template": {
+                                "type": "str",
+                                "value": "Evaluate if this answer is fully supported by the provided context.\n\nContext: {context}\nAnswer: {answer}\n\nIs every claim in the answer directly supported by the context?\nRespond with SUPPORTED or NOT_SUPPORTED."
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "GroundednessLLM-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 2200,
+                    "y": 200
+                },
+                "data": {
+                    "type": "ChatOpenAI",
+                    "node": {
+                        "display_name": "Groundedness Evaluator",
+                        "template": {
+                            "model_name": {
+                                "type": "str",
+                                "value": "gpt-4o-mini"
+                            },
+                            "temperature": {
+                                "type": "float",
+                                "value": 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ChatOutput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 2500,
+                    "y": 300
+                },
+                "data": {
+                    "type": "ChatOutput",
+                    "node": {
+                        "display_name": "Chat Output"
+                    }
+                }
+            }
+        ],
+        "edges": [
+            {
+                "source": "ChatInput-1",
+                "target": "RetrieveDecision-1",
+                "targetHandle": "question"
+            },
+            {
+                "source": "RetrieveDecision-1",
+                "target": "DecisionLLM-1"
+            },
+            {
+                "source": "DecisionLLM-1",
+                "target": "Router-1"
+            },
+            {
+                "source": "Router-1",
+                "target": "Retriever-1",
+                "sourceHandle": "yes"
+            },
+            {
+                "source": "Retriever-1",
+                "target": "GeneratePrompt-1",
+                "targetHandle": "context"
+            },
+            {
+                "source": "ChatInput-1",
+                "target": "GeneratePrompt-1",
+                "targetHandle": "question"
+            },
+            {
+                "source": "GeneratePrompt-1",
+                "target": "GroundednessCheck-1"
+            },
+            {
+                "source": "GroundednessCheck-1",
+                "target": "GroundednessLLM-1"
+            },
+            {
+                "source": "GroundednessLLM-1",
+                "target": "ChatOutput-1"
+            }
+        ]
+    },
+    "description": "Self-RAG with reflection loop: Retrieve Decision → Retrieval → Generation → Groundedness Check → Return/Retry",
+    "name": "Self-RAG with Reflection",
+    "endpoint_name": "self-rag"
+}

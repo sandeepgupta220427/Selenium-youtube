@@ -1,0 +1,270 @@
+{
+    "name": "Corrective RAG with Web Search Fallback",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "corrective-rag",
+                "responseMode": "lastNode"
+            },
+            "id": "webhook",
+            "name": "Webhook Trigger",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                200,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "id": "ai-agent",
+            "name": "AI Agent (Retriever)",
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 1.7,
+            "position": [
+                500,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "model": "gpt-4o-mini",
+                "options": {
+                    "temperature": 0
+                }
+            },
+            "id": "openai-chat",
+            "name": "OpenAI Chat Model",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1,
+            "position": [
+                400,
+                500
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI API"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "model": "gpt-4o-mini",
+                "messages": {
+                    "values": [
+                        {
+                            "content": "Score the relevance of these retrieved documents to the question.\n\nDocuments:\n{{ $json.retrieved_docs }}\n\nQuestion: {{ $json.query }}\n\nRespond with: CORRECT, AMBIGUOUS, or INCORRECT"
+                        }
+                    ]
+                },
+                "options": {
+                    "temperature": 0
+                }
+            },
+            "id": "doc-grader",
+            "name": "Document Grader",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1,
+            "position": [
+                800,
+                300
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI API"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "string": [
+                        {
+                            "value1": "={{ $json.message.content }}",
+                            "operation": "contains",
+                            "value2": "INCORRECT"
+                        }
+                    ]
+                }
+            },
+            "id": "if-incorrect",
+            "name": "IF: Docs Incorrect?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                1100,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "url": "https://api.tavily.com/search",
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "query",
+                            "value": "={{ $json.query }}"
+                        },
+                        {
+                            "name": "api_key",
+                            "value": "YOUR_TAVILY_API_KEY"
+                        },
+                        {
+                            "name": "max_results",
+                            "value": "3"
+                        }
+                    ]
+                }
+            },
+            "id": "tavily-search",
+            "name": "Tavily Web Search",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1400,
+                200
+            ]
+        },
+        {
+            "parameters": {
+                "model": "gpt-4o-mini",
+                "messages": {
+                    "values": [
+                        {
+                            "content": "Answer the question using this context:\n\nContext: {{ $json.context }}\nQuestion: {{ $json.query }}\n\nAnswer:"
+                        }
+                    ]
+                },
+                "options": {
+                    "temperature": 0
+                }
+            },
+            "id": "final-gen",
+            "name": "Final Answer Generator",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1,
+            "position": [
+                1700,
+                300
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI API"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "respondWith": "text",
+                "responseBody": "={{ $json.message.content }}"
+            },
+            "id": "respond",
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                2000,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "AI Agent (Retriever)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI Chat Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "AI Agent (Retriever)",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Agent (Retriever)": {
+            "main": [
+                [
+                    {
+                        "node": "Document Grader",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Document Grader": {
+            "main": [
+                [
+                    {
+                        "node": "IF: Docs Incorrect?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "IF: Docs Incorrect?": {
+            "main": [
+                [
+                    {
+                        "node": "Tavily Web Search",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Final Answer Generator",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Tavily Web Search": {
+            "main": [
+                [
+                    {
+                        "node": "Final Answer Generator",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Final Answer Generator": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "meta": {
+        "description": "Corrective RAG: Retrieve → Grade documents → IF incorrect → Tavily web search fallback → Generate answer"
+    }
+}

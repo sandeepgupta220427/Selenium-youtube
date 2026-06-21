@@ -1,0 +1,19 @@
+[
+  {
+    "id": "TC-001",
+    "title": "Short descriptive title",
+    "description": "Detailed description of what is being tested",
+    "preconditions": [
+      "Condition 1",
+      "Condition 2"
+    ],
+    "steps": [
+      "Step 1",
+      "Step 2",
+      "Step 3"
+    ],
+    "expected_result": "What should happen if the test passes",
+    "priority": "High/Medium/Low",
+    "type": "Functional/Boundary/Negative"
+  }
+]

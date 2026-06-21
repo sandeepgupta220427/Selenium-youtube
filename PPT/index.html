@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Tester Blueprint | Course Docs</title>
+  <meta name="description"
+    content="Docs-style course overview for AI Tester Blueprint Projects 1 to 15, using a Mintlify-inspired navigation shell and repo-based project content.">
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2316a34a'/%3E%3Cpath d='M18 20h28v8H18zm0 16h20v8H18z' fill='white'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'JetBrains Mono', SFMono-Regular, Menlo, Consolas, monospace;
+      --nav-h: 58px;
+      --sidebar-w: 278px;
+      --radius: 10px;
+      --radius-sm: 6px;
+      --transition: 0.16s ease;
+      --shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+    }
+
+    :root,
+    html[data-theme="light"] {
+      --bg: #ffffff;
+      --bg-1: #f9fafb;
+      --bg-2: #f3f4f6;
+      --panel: #ffffff;
+      --line: #e5e7eb;
+      --line-2: #d1d5db;
+      --text: #111827;
+      --text-2: #374151;
+      --text-3: #6b7280;
+      --text-4: #9ca3af;
+      --accent: #16a34a;
+      --accent-hover: #15803d;
+      --accent-soft: #f0fdf4;
+      --accent-border: #bbf7d0;
+      --accent-text: #166534;
+      --nav-bg: rgba(255, 255, 255, 0.94);
+      --code-bg: #18181b;
+      --code-text: #f4f4f5;
+      --warning-bg: #fff7ed;
+      --warning-text: #c2410c;
+      color-scheme: light;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #0f0f0f;
+      --bg-1: #161616;
+      --bg-2: #1f1f1f;
+      --panel: #0f0f0f;
+      --line: #242424;
+      --line-2: #303030;
+      --text: #f4f4f5;
+      --text-2: #d4d4d8;
+      --text-3: #a1a1aa;
+      --text-4: #52525b;
+      --accent: #22c55e;
+      --accent-hover: #4ade80;
+      --accent-soft: #052e16;
+      --accent-border: #14532d;
+      --accent-text: #4ade80;
+      --nav-bg: rgba(15, 15, 15, 0.94);
+      --code-bg: #09090b;
+      --code-text: #f4f4f5;
+      --warning-bg: #431407;
+      --warning-text: #fb923c;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-gutter: stable;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font);
+      font-size: 15px;
+      line-height: 1.65;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 1px 5px;
+      color: var(--accent-text);
+    }
+
+    pre {
+      margin: 0;
+      padding: 18px;
+      overflow-x: auto;
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.7;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      z-index: 300;
+    }
+
+    .brand-block {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px 0 20px;
+      border-right: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .brand-copy strong {
+      display: block;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-copy span {
+      display: block;
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 14px;
+      flex: 1;
+      overflow-x: auto;
+    }
+
+    .nav-top-link {
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      color: var(--text-3);
+      font-size: 14px;
+      white-space: nowrap;
+      transition: color var(--transition), background var(--transition);
+    }
+
+    .nav-top-link:hover {
+      color: var(--text-2);
+      background: var(--bg-1);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 18px;
+      flex-shrink: 0;
+    }
+
+    .ghost-btn,
+    .theme-btn,
+    .menu-btn {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text-3);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      cursor: pointer;
+      transition: all var(--transition);
+      font-family: var(--font);
+      font-size: 13px;
+    }
+
+    .ghost-btn:hover,
+    .theme-btn:hover,
+    .menu-btn:hover {
+      color: var(--text-2);
+      border-color: var(--line-2);
+      background: var(--bg-1);
+    }
+
+    .menu-btn {
+      display: none;
+    }
+
+    .shell {
+      display: flex;
+      min-height: 100vh;
+      padding-top: var(--nav-h);
+    }
+
+    .sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      position: fixed;
+      top: var(--nav-h);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      padding-bottom: 24px;
+      z-index: 120;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 0;
+    }
+
+    .sb-search-wrap {
+      position: sticky;
+      top: 0;
+      background: var(--panel);
+      padding: 12px 10px 6px;
+      z-index: 2;
+    }
+
+    .sb-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--bg-1);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+    }
+
+    .sb-search input {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      width: 100%;
+      font-size: 13px;
+    }
+
+    .sb-search kbd {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-4);
+      background: var(--bg-2);
+      border: 1px solid var(--line);
+      border-radius: 3px;
+      padding: 1px 4px;
+    }
+
+    .sb-group {
+      margin-top: 16px;
+    }
+
+    .sb-label {
+      padding: 3px 16px 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-3);
+      letter-spacing: 0.02em;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 16px;
+      margin: 1px 4px;
+      color: var(--text-3);
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      transition: color var(--transition), background var(--transition);
+    }
+
+    .nav-item:hover {
+      color: var(--text-2);
+      background: var(--bg-1);
+    }
+
+    .nav-item.active {
+      color: var(--accent-text);
+      background: var(--accent-soft);
+      font-weight: 600;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: var(--bg-2);
+      color: var(--text-4);
+      border: 1px solid var(--line);
+    }
+
+    .sb-bottom {
+      margin-top: 18px;
+      padding: 12px 14px 0;
+      border-top: 1px solid var(--line);
+      color: var(--text-4);
+      font-size: 12px;
+    }
+
+    .content {
+      margin-left: var(--sidebar-w);
+      width: calc(100% - var(--sidebar-w));
+      padding: 28px 32px 56px;
+    }
+
+    .content-wrap {
+      max-width: 1060px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 8px 0 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-text);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 16px 0 10px;
+      font-size: clamp(36px, 5vw, 58px);
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 30px;
+      letter-spacing: -0.04em;
+      line-height: 1.15;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-2);
+    }
+
+    .hero p {
+      max-width: 820px;
+      font-size: 16px;
+    }
+
+    .hero-grid,
+    .stats-grid,
+    .phase-grid,
+    .cards-2,
+    .cards-3,
+    .files-grid,
+    .project-facts,
+    .highlight-list,
+    .projects-shell {
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 24px;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 24px;
+    }
+
+    .phase-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cards-2,
+    .files-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cards-3,
+    .project-facts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .projects-shell {
+      margin-top: 36px;
+    }
+
+    .card,
+    .metric,
+    .project-section,
+    .fact,
+    .file-card,
+    .callout {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .card,
+    .metric,
+    .project-section,
+    .fact,
+    .file-card,
+    .callout {
+      padding: 18px;
+    }
+
+    .card:hover,
+    .file-card:hover {
+      border-color: var(--line-2);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 6px;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+
+    .metric span {
+      color: var(--text-3);
+      font-size: 13px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-text);
+      border: 1px solid var(--accent-border);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .section {
+      padding: 38px 0;
+      border-bottom: 1px solid var(--line);
+      scroll-margin-top: calc(var(--nav-h) + 18px);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .section-kicker {
+      display: inline-block;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-text);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .phase-chip,
+    .project-id {
+      display: inline-flex;
+      align-items: center;
+      padding: 7px 11px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--bg-1);
+      color: var(--text-3);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--text-2);
+    }
+
+    .list li+li {
+      margin-top: 7px;
+    }
+
+    .callout.warning {
+      background: linear-gradient(180deg, var(--warning-bg), var(--panel));
+      color: var(--warning-text);
+    }
+
+    .callout.warning p,
+    .callout.warning li {
+      color: var(--warning-text);
+    }
+
+    .project-section h2 {
+      margin-bottom: 8px;
+    }
+
+    .project-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .project-id {
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
+      color: var(--accent-text);
+    }
+
+    .files-grid {
+      margin-top: 16px;
+    }
+
+    .file-card small {
+      display: block;
+      margin-top: 9px;
+      color: var(--text-3);
+      font-family: var(--mono);
+      font-size: 11px;
+      word-break: break-all;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all var(--transition);
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #fff;
+      border: 1px solid var(--accent);
+    }
+
+    .btn.primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn.secondary {
+      border: 1px solid var(--line);
+      color: var(--text-2);
+      background: transparent;
+    }
+
+    .btn.secondary:hover {
+      background: var(--bg-1);
+      border-color: var(--line-2);
+    }
+
+    .footer-note {
+      padding: 26px 0 12px;
+      color: var(--text-3);
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1100px) {
+
+      .hero-grid,
+      .phase-grid,
+      .project-facts,
+      .cards-3,
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 920px) {
+      .menu-btn {
+        display: inline-flex;
+      }
+
+      .brand-block {
+        width: auto;
+        min-width: 0;
+        border-right: none;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform var(--transition);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 24px 18px 48px;
+      }
+
+      .nav-center {
+        display: none;
+      }
+    }
+
+    @media (max-width: 700px) {
+
+      .hero-grid,
+      .stats-grid,
+      .phase-grid,
+      .cards-2,
+      .cards-3,
+      .files-grid,
+      .project-facts {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 40px;
+      }
+
+      h2 {
+        font-size: 26px;
+      }
+
+      .nav-right .ghost-btn:first-child {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand-block">
+      <button class="menu-btn" id="menuToggle" aria-label="Toggle navigation">Menu</button>
+      <div class="brand-mark">AI</div>
+      <div class="brand-copy">
+        <strong>AI Tester Blueprint</strong>
+        <span>The Testing Academy | Projects 0 to 19</span>
+      </div>
+    </div>
+    <nav class="nav-center">
+      <a class="nav-top-link" href="#overview">Overview</a>
+      <a class="nav-top-link" href="#phases">Phases</a>
+      <a class="nav-top-link" href="#learning-path">Learning Path</a>
+      <a class="nav-top-link" href="#projects-anchor">Projects</a>
+      <a class="nav-top-link" href="./rag-track.html">RAG Track Page</a>
+    </nav>
+    <div class="nav-right">
+      <a class="ghost-btn" href="../README.md">Repo README</a>
+      <button class="theme-btn" id="themeToggle" aria-label="Toggle theme">Theme</button>
+    </div>
+  </header>
+
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-search-wrap">
+        <label class="sb-search">
+          <input id="sidebarSearch" type="text" placeholder="Search projects or phases..."
+            aria-label="Search projects or phases">
+          <kbd>/</kbd>
+        </label>
+      </div>
+
+      <div class="sb-group">
+        <div class="sb-label">Core</div>
+        <a class="nav-item" href="#overview"><span>Course overview</span><span class="nav-badge">Start</span></a>
+        <a class="nav-item" href="#phases"><span>Phases</span><span class="nav-badge">4</span></a>
+        <a class="nav-item" href="#learning-path"><span>Learning path</span></a>
+      </div>
+
+      <div class="sb-group">
+        <div class="sb-label">Phase 1</div>
+        <a class="nav-item" href="#project-1"><span>Project 1</span><span class="nav-badge">Local AI</span></a>
+        <a class="nav-item" href="#project-2"><span>Project 2</span><span class="nav-badge">Migration</span></a>
+        <a class="nav-item" href="#project-3"><span>Project 3</span><span class="nav-badge">Prompting</span></a>
+        <a class="nav-item" href="#project-4"><span>Project 4</span><span class="nav-badge">Templates</span></a>
+      </div>
+
+      <div class="sb-group">
+        <div class="sb-label">Phase 2</div>
+        <a class="nav-item" href="#project-5"><span>Project 5</span><span class="nav-badge">App</span></a>
+        <a class="nav-item" href="#project-6"><span>Project 6</span><span class="nav-badge">Career</span></a>
+        <a class="nav-item" href="#project-7"><span>Project 7</span><span class="nav-badge">Agent</span></a>
+        <a class="nav-item" href="#project-8"><span>Project 8</span><span class="nav-badge">n8n</span></a>
+        <a class="nav-item" href="#project-9"><span>Project 9</span><span class="nav-badge">Content</span></a>
+        <a class="nav-item" href="#project-10"><span>Project 10</span><span class="nav-badge">BugSnap</span></a>
+      </div>
+
+      <div class="sb-group">
+        <div class="sb-label">Phase 3</div>
+        <a class="nav-item" href="#project-11"><span>Project 11</span><span class="nav-badge">LangFlow</span></a>
+        <a class="nav-item" href="#project-12"><span>Project 12</span><span class="nav-badge">RAG</span></a>
+        <a class="nav-item" href="#project-13"><span>Project 13</span><span class="nav-badge">LangFlow RAG</span></a>
+        <a class="nav-item" href="#project-14"><span>Project 14</span><span class="nav-badge">RAG App</span></a>
+        <a class="nav-item" href="#project-15"><span>Project 15</span><span class="nav-badge">Embeddings</span></a>
+      </div>
+
+      <div class="sb-group">
+        <div class="sb-label">Phase 4</div>
+        <a class="nav-item" href="#project-16"><span>Project 16</span><span class="nav-badge">MCP</span></a>
+        <a class="nav-item" href="#project-17"><span>Project 17</span><span class="nav-badge">Python</span></a>
+        <a class="nav-item" href="#project-18"><span>Project 18</span><span class="nav-badge">CrewAI</span></a>
+        <a class="nav-item" href="#project-19"><span>Project 19</span><span class="nav-badge">MCP Build</span></a>
+      </div>
+
+      <div class="sb-bottom">
+        Use this page like a course map. Start from the top, open the linked project assets, and move module by module.
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="content-wrap">
+        <section class="hero section" id="overview">
+          <span class="eyebrow">AI Tester Blueprint</span>
+          <h1>Learn AI for testing through 20 hands-on projects</h1>
+          <p>This course starts with local AI tools and prompt engineering, moves into apps and automation, then expands into LangFlow, RAG, MCP, CrewAI agents, and custom MCP server creation. Use this page as your student guide through the complete learning journey.</p>
+
+          <div class="hero-grid">
+            <div class="card">
+              <h3>What you will build</h3>
+              <p>Test generators, prompt frameworks, full-stack QA apps, LangFlow pipelines, RAG systems, MCP workflows, CrewAI agents, and custom MCP servers.</p>
+            </div>
+            <div class="card">
+              <h3>What you will practice</h3>
+              <p>Prompt design, browser automation, API framework work, no-code orchestration, retrieval design, multi-agent crews, and tool-connected AI execution.</p>
+            </div>
+            <div class="card">
+              <h3>How you will learn</h3>
+              <p>Each project gives you a clear outcome, the main concepts to focus on, and direct links to the repo assets used in the session.</p>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="metric"><strong>20</strong><span>hands-on projects across the course</span></div>
+            <div class="metric"><strong>4</strong><span>major learning phases</span></div>
+            <div class="metric"><strong>Beginner to Advanced</strong><span>from local AI basics to CrewAI agents and custom MCP servers</span></div>
+            <div class="metric"><strong>Learn by building</strong><span>every module points back to a real project artifact</span></div>
+          </div>
+
+          <div class="actions">
+            <a class="btn primary" href="#projects-anchor">Open Projects</a>
+            <a class="btn secondary" href="./rag-track.html">Open RAG Track Subpage</a>
+            <a class="btn secondary" href="../README.md">Open Repository README</a>
+          </div>
+        </section>
+
+        <section class="section" id="phases">
+          <div class="section-head">
+            <div>
+              <span class="section-kicker">Course structure</span>
+              <h2>How the course is grouped</h2>
+              <p>The projects are grouped so you can progress from fundamentals to advanced integrations in a logical order, instead of seeing AI testing as a random collection of tools.</p>
+            </div>
+          </div>
+          <div class="phase-grid">
+            <div class="card">
+              <h3>Phase 1: Local AI and Prompting</h3>
+              <p>Projects 1 to 4 establish private local LLM workflows, prompt frameworks, and reusable prompt assets.
+              </p>
+              <div class="tag-row"><span class="tag">Projects 1-4</span><span class="tag">Ollama</span><span
+                  class="tag">Prompting</span></div>
+            </div>
+            <div class="card">
+              <h3>Phase 2: Apps, Agents, and Automation</h3>
+              <p>Projects 5 to 10 move into product-like UI, JIRA agents, no-code automation, and AI-assisted workflows.
+              </p>
+              <div class="tag-row"><span class="tag">Projects 5-10</span><span class="tag">Apps</span><span
+                  class="tag">n8n</span></div>
+            </div>
+            <div class="card">
+              <h3>Phase 3: LangFlow and Retrieval Systems</h3>
+              <p>Projects 11 to 15 cover LangFlow basics, RAG theory, visual flow engineering, modular RAG apps, and
+                embeddings.</p>
+              <div class="tag-row"><span class="tag">Projects 11-15</span><span class="tag">LangFlow</span><span
+                  class="tag">RAG</span></div>
+            </div>
+            <div class="card">
+              <h3>Phase 4: MCP, CrewAI and Custom Agents</h3>
+              <p>Projects 16 to 19 extend the course into MCP workflows, Python for AI, CrewAI multi-agent systems, and building custom MCP servers.</p>
+              <div class="tag-row"><span class="tag">Projects 16-19</span><span class="tag">MCP</span><span
+                  class="tag">CrewAI</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="learning-path">
+          <div class="section-head">
+            <div>
+              <span class="section-kicker">Teaching path</span>
+              <h2>How you move through the program</h2>
+              <p>Think of this as the learning route for the full blueprint. Every later phase becomes easier once the earlier phase is clear.</p>
+            </div>
+          </div>
+          <div class="cards-3">
+            <div class="callout">
+              <h3>1. Start with control</h3>
+              <p>Projects 1 to 4 show how to control prompt behavior, model behavior, and input structure before
+                introducing more moving parts.</p>
+            </div>
+            <div class="callout">
+              <h3>2. Move to useful systems</h3>
+              <p>Projects 5 to 10 turn AI into visible workflow value: apps, agents, JIRA integration, and content or
+                bug workflows.</p>
+            </div>
+            <div class="callout">
+              <h3>3. Learn retrieval and flow engineering</h3>
+              <p>Projects 11 to 15 close the loop by moving from LangFlow fundamentals to retrieval theory, flow
+                engineering, product code, and embeddings.</p>
+            </div>
+            <div class="callout">
+              <h3>4. Extend into MCP and multi-agent systems</h3>
+              <p>Projects 16 to 19 connect AI to MCP orchestration, Python foundations, CrewAI multi-agent crews, and building custom MCP servers from scratch.</p>
+            </div>
+          </div>
+        </section>
+
+        <div id="projects-anchor"></div>
+        <div class="projects-shell" id="projectsContainer"></div>
+
+        <div class="footer-note">
+          This page is designed to be presented directly to students. Use the sidebar to navigate by phase or jump into any project when you are ready to go hands-on.
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const projects = [
+      {
+        id: 1,
+        phase: 'Phase 1',
+        title: 'Local Test Case Generator',
+        objective: 'Generate structured test cases from user stories with a local LLM while keeping everything private on the machine.',
+        focus: 'Test case generation, prompt engineering',
+        stack: 'Python, FastAPI, Vanilla JS, Ollama',
+        concept: 'B.L.A.S.T. protocol for agentic AI',
+        highlights: [
+          'Local execution with Llama 3.2 through Ollama',
+          'Structured JSON-style output for QA use',
+          'Clear backend, tool, and UI separation'
+        ],
+        links: [
+          { label: 'README', href: '../Project_01_LocalTestCaseGenerator/README.md' },
+          { label: 'Backend API', href: '../Project_01_LocalTestCaseGenerator/backend/app.py' },
+          { label: 'Frontend UI', href: '../Project_01_LocalTestCaseGenerator/frontend/index.html' }
+        ]
+      },
+      {
+        id: 2,
+        phase: 'Phase 1',
+        title: 'Selenium to Playwright Converter',
+        objective: 'Convert Selenium Java tests into Playwright TypeScript with a privacy-first local AI workflow.',
+        focus: 'Code conversion, legacy migration',
+        stack: 'React, Vite, Node.js, TailwindCSS, Ollama',
+        concept: 'Local secure migration assistant',
+        highlights: [
+          'CodeLlama-powered local conversion',
+          'Express proxy over Ollama',
+          'Modern UI with code editing and quick testing'
+        ],
+        links: [
+          { label: 'README', href: '../Project_02_Selenium2PlaywrightLocalLLM/README.md' },
+          { label: 'Server', href: '../Project_02_Selenium2PlaywrightLocalLLM/server.js' },
+          { label: 'UI App', href: '../Project_02_Selenium2PlaywrightLocalLLM/ui/src/App.tsx' }
+        ]
+      },
+      {
+        id: 3,
+        phase: 'Phase 1',
+        title: 'RICE-POT Prompt Framework',
+        objective: 'Show how a disciplined prompting framework produces enterprise-style automation output instead of vague code.',
+        focus: 'Prompt engineering, framework generation',
+        stack: 'Java, Selenium, Maven, TestNG',
+        concept: 'RICE-POT prompt structure',
+        highlights: [
+          'Role, instruction, context, example, parameters, output, tone',
+          'Enterprise automation constraints baked into the prompt',
+          'Salesforce login used as the target app'
+        ],
+        links: [
+          { label: 'README', href: '../Project_03_RICE_POT_PROMPT_SeleniumFramework/README.md' },
+          { label: 'pom.xml', href: '../Project_03_RICE_POT_PROMPT_SeleniumFramework/pom.xml' },
+          { label: 'testng.xml', href: '../Project_03_RICE_POT_PROMPT_SeleniumFramework/testng.xml' }
+        ]
+      },
+      {
+        id: 4,
+        phase: 'Phase 1',
+        title: 'Local LLM Prompt Templates',
+        objective: 'Create reusable prompt templates that turn PRDs and context files into actionable QA output.',
+        focus: 'Prompt templates, PRD analysis',
+        stack: 'Markdown templates, Playwright TypeScript, context files',
+        concept: 'Context-constrained prompting',
+        highlights: [
+          'Separates PRD source, constraints, and output template',
+          'Useful for repeatable requirement-to-test workflows',
+          'Turns one-off prompting into reusable assets'
+        ],
+        links: [
+          { label: 'Project Folder', href: '../Project_04_LocalLLM_PROMPT_TEMPLATE/' },
+          { label: 'Generated Test Cases', href: '../Project_04_LocalLLM_PROMPT_TEMPLATE/Task1_TC_PRD.md' },
+          { label: 'Constraints', href: '../Project_04_LocalLLM_PROMPT_TEMPLATE/context_constraints.md' }
+        ]
+      },
+      {
+        id: 5,
+        phase: 'Phase 2',
+        title: 'Job Board Assistant',
+        objective: 'Build a usable Kanban-style product with AI assistance while keeping data local in the browser.',
+        focus: 'AI-assisted full-stack development',
+        stack: 'React 19, TypeScript, Vite, Tailwind CSS',
+        concept: 'Production-feeling app built with AI support',
+        highlights: [
+          'Kanban board with six lifecycle columns',
+          'Search, filters, import/export, and stats',
+          'LocalStorage-based persistence'
+        ],
+        links: [
+          { label: 'README', href: '../Project_05_ClaudeCodeJobAssistantBoard/job-board-assistant/README.md' },
+          { label: 'Main App', href: '../Project_05_ClaudeCodeJobAssistantBoard/job-board-assistant/src/App.tsx' },
+          { label: 'LocalStorage Hook', href: '../Project_05_ClaudeCodeJobAssistantBoard/job-board-assistant/src/hooks/useLocalStorage.ts' }
+        ]
+      },
+      {
+        id: 6,
+        phase: 'Phase 2',
+        title: 'AI Resume Fix for LinkedIn',
+        objective: 'Use AI to reposition QA resumes for stronger role targeting and clearer professional storytelling.',
+        focus: 'Resume optimization, career tools',
+        stack: 'AI prompts, DOCX, PDF',
+        concept: 'Career artifact enhancement with AI',
+        highlights: [
+          'Turns prompting into a real career deliverable',
+          'Generates role-targeted resume assets',
+          'Extends the course beyond pure code generation'
+        ],
+        links: [
+          { label: 'Project Folder', href: '../Project_06_ResumeFix_LinkedIn/' },
+          { label: 'PDF Output', href: '../Project_06_ResumeFix_LinkedIn/Resume_FIX/Pramod_Dutta_Resume_PhysicsWallah_QA_Manager.pdf' },
+          { label: 'ZIP Artifact', href: '../Project_06_ResumeFix_LinkedIn/Resume_FIX.zip' }
+        ]
+      },
+      {
+        id: 7,
+        phase: 'Phase 2',
+        title: 'TestPlan AI Agent + JIRA Integration',
+        objective: 'Generate structured QA artifacts from JIRA tickets through a full-stack AI agent workflow.',
+        focus: 'AI agents, JIRA integration, app development',
+        stack: 'Node.js, Express, React, TypeScript, Tailwind CSS',
+        concept: 'A.N.T. 3-layer architecture',
+        highlights: [
+          'Combines settings, JIRA fetch, template handling, and generation routes',
+          'Supports Groq and local model modes',
+          'Connects QA planning directly to ticket data'
+        ],
+        links: [
+          { label: 'AGENTS Guide', href: '../Project_07_TestPlan_AI_AGENT_JIRA/AGENTS.md' },
+          { label: 'Backend Entry', href: '../Project_07_TestPlan_AI_AGENT_JIRA/intelligent-test-plan-agent/backend/src/index.ts' },
+          { label: 'Frontend App', href: '../Project_07_TestPlan_AI_AGENT_JIRA/intelligent-test-plan-agent/frontend/src/App.tsx' }
+        ]
+      },
+      {
+        id: 8,
+        phase: 'Phase 2',
+        title: 'n8n AI Workflow Automation',
+        objective: 'Teach testers how to automate multi-step AI workflows without writing every integration by hand.',
+        focus: 'No-code AI agents, workflow automation',
+        stack: 'n8n, Groq API, Jira API, Google Docs, Google Sheets',
+        concept: 'Visual workflow automation for testers',
+        highlights: [
+          'Introduces no-code orchestration for QA work',
+          'Connects docs, tickets, sheets, and models',
+          'Builds comfort with multi-step workflow thinking'
+        ],
+        links: [
+          { label: 'Project Folder', href: '../Project_08_n8n_Learning/' },
+          { label: 'README', href: '../Project_08_n8n_Learning/README.md' },
+          { label: 'Workflow JSON', href: '../Project_08_n8n_Learning/AI_Batch_003_TestGen_Creator_Our_PRD_Excel.json' }
+        ]
+      },
+      {
+        id: 9,
+        phase: 'Phase 2',
+        title: 'Content Creation Agent (n8n)',
+        objective: 'Plan a scheduled AI pipeline that can generate and publish content automatically.',
+        focus: 'Content automation, scheduling',
+        stack: 'n8n, API workflows, automation prompts',
+        concept: 'Repeatable publishing automation',
+        highlights: [
+          'Workflow thinking for daily content production',
+          'Mixes topic discovery, generation, imagery, and publishing',
+          'Good example of AI automation outside testing execution'
+        ],
+        links: [
+          { label: 'Project Folder', href: '../Project_09_Content-Creation-n8n/' },
+          { label: 'Idea File', href: '../Project_09_Content-Creation-n8n/idea.md' },
+          { label: 'BLAST Notes', href: '../Project_09_Content-Creation-n8n/BLAST.md' }
+        ]
+      },
+      {
+        id: 10,
+        phase: 'Phase 2',
+        title: 'BugSnap',
+        objective: 'Improve bug reporting workflows by adding AI, workflow automation, and vector-style enrichment ideas.',
+        focus: 'Bug reporting tools',
+        stack: 'Workflow JSON, markdown, web tooling',
+        concept: 'Bug reporting as an AI-enhanced workflow',
+        highlights: [
+          'Links reporting to retrieval and vector operations',
+          'Makes bug workflows part of the AI curriculum',
+          'Useful transition toward semantic systems'
+        ],
+        links: [
+          { label: 'Project Folder', href: '../Project_10_BugSnap-BugReportEnhancer/' },
+          { label: 'Workflow JSON', href: '../Project_10_BugSnap-BugReportEnhancer/DB.json' },
+          { label: 'Repo Link Note', href: '../Project_10_BugSnap-BugReportEnhancer/repo.md' }
+        ]
+      },
+      {
+        id: 11,
+        phase: 'Phase 3',
+        title: 'LangFlow Fundamentals',
+        objective: 'Teach LangFlow basics and starter QA agents before students start building retrieval systems.',
+        focus: 'LangFlow basics, starter agents',
+        stack: 'LangFlow, Groq, prompt templates, API request nodes',
+        concept: 'Visual AI building blocks before RAG',
+        highlights: [
+          'Simple chatbot and prompt-based QA assistant',
+          'RICE-POT test case generator flow',
+          'JIRA and PDF starter agent flows'
+        ],
+        links: [
+          { label: 'README', href: '../Project_11_LangFlow/README.md' },
+          { label: 'QuickStart README', href: '../Project_11_LangFlow/01_LangFlow_QuickStart/README.md' },
+          { label: 'RICE-POT Flow', href: '../Project_11_LangFlow/01_LangFlow_QuickStart/rice_pot_testcase_generator_langflow.json' }
+        ]
+      },
+      {
+        id: 12,
+        phase: 'Phase 3',
+        title: 'RAG Basics',
+        objective: 'Explain what RAG is, why retrieval matters, and how the main architecture families differ.',
+        focus: 'RAG theory, architectures, evaluation',
+        stack: 'Python, LangChain, markdown',
+        concept: 'Grounding model answers in private documents',
+        highlights: [
+          'Covers the major RAG patterns clearly',
+          'Includes evaluation and testing guidance',
+          'Acts as the theory layer before LangFlow or app implementation'
+        ],
+        links: [
+          { label: 'README', href: '../Project_12_RAG_Basics/README.md' },
+          { label: 'Introduction', href: '../Project_12_RAG_Basics/01_Introduction_to_RAG.md' },
+          { label: 'RAG Evaluation', href: '../Project_12_RAG_Basics/12_RAG_Evaluation/README.md' }
+        ]
+      },
+      {
+        id: 13,
+        phase: 'Phase 3',
+        title: 'RAG with LangFlow',
+        objective: 'Translate retrieval patterns into importable LangFlow flows that students can inspect and test visually.',
+        focus: 'Low-code AI, visual node programming',
+        stack: 'LangFlow, Chroma, Groq, AstraDB, n8n',
+        concept: 'Drag-and-drop RAG pipeline engineering',
+        highlights: [
+          'Naive, advanced, modular, graph, and other RAG flows',
+          'Import instructions for LangFlow and n8n',
+          'Makes prompts, retrieval, and routing inspectable on a canvas'
+        ],
+        links: [
+          { label: 'README', href: '../Project_13_RAG_with_LangFlow/README.md' },
+          { label: 'Naive Flow', href: '../Project_13_RAG_with_LangFlow/02_Naive_RAG_Flow/naive_rag_langflow.json' },
+          { label: 'Graph Flow', href: '../Project_13_RAG_with_LangFlow/05_Graph_RAG_Flow/graph_rag_langflow.json' }
+        ]
+      },
+      {
+        id: 14,
+        phase: 'Phase 3',
+        title: 'RAG VIBE Coding App',
+        objective: 'Show how retrieval theory and visual flow ideas become a working modular application.',
+        focus: 'Full-stack RAG app, modular retrieval',
+        stack: 'FastAPI, ChromaDB, Python, static HTML',
+        concept: 'Domain-routed ingestion and answer generation',
+        highlights: [
+          'Upload route for API, UI, and performance documents',
+          'Router decides the correct vector store per query',
+          'Static dashboard for ingestion and chat'
+        ],
+        links: [
+          { label: 'FastAPI App', href: '../Project_14_RAG_VIBE_CODING/app.py' },
+          { label: 'Dashboard UI', href: '../Project_14_RAG_VIBE_CODING/static/index.html' },
+          { label: 'Router Module', href: '../Project_14_RAG_VIBE_CODING/rag/router.py' }
+        ],
+        note: 'This folder currently does not have a root README, so the summary here is derived from the app code and current structure.'
+      },
+      {
+        id: 15,
+        phase: 'Phase 3',
+        title: 'Vector Embeddings Visualizer',
+        objective: 'Make chunking, embeddings, similarity, and vector projection easy to explain in workshops.',
+        focus: 'Embeddings, chunking, similarity, RAG foundations',
+        stack: 'FastAPI, Vanilla HTML/CSS/JS, Ollama, OpenAI, Mistral',
+        concept: 'Visible teaching model for vector search',
+        highlights: [
+          'Chunk cards, vector previews, and heatmaps',
+          'Demo mode plus real embedding providers',
+          'Useful bridge between theory and retrieval systems'
+        ],
+        links: [
+          { label: 'README', href: '../Project_15_Vector_Embeddings_Visualizer/README.md' },
+          { label: 'Backend API', href: '../Project_15_Vector_Embeddings_Visualizer/backend/app.py' },
+          { label: 'Frontend UI', href: '../Project_15_Vector_Embeddings_Visualizer/frontend/index.html' }
+        ]
+      },
+      {
+        id: 16,
+        phase: 'Phase 4',
+        title: 'MCP Basics',
+        objective: 'Introduce MCP-driven QA workflows using Playwright orchestration, execution evidence, and JIRA-linked reporting ideas.',
+        focus: 'MCP, browser orchestration, evidence capture',
+        stack: 'Playwright MCP, JIRA workflow concepts, HTML reporting',
+        concept: 'Tool-connected QA execution with AI assistance',
+        highlights: [
+          'Playwright-driven test execution through MCP',
+          'Failure evidence and screenshot-oriented reporting',
+          'Bridges AI prompting with browser and issue-tracking actions'
+        ],
+        links: [
+          { label: 'Project Folder', href: '../Project_16_MCP_Basic/' },
+          { label: 'Task File', href: '../Project_16_MCP_Basic/TASK.MD' },
+          { label: 'MCP Playwright', href: '../Project_16_MCP_Basic/Project_01_MCP_Playwright/' }
+        ]
+      },
+      {
+        id: 17,
+        phase: 'Phase 4',
+        title: 'Python for AI Testers',
+        objective: 'Build a solid Python foundation covering basics through advanced concepts needed for AI-powered testing tools.',
+        focus: 'Python fundamentals, data structures, modules',
+        stack: 'Python, JSON, OS module, Lambda functions',
+        concept: 'Python fluency as a prerequisite for AI tooling',
+        highlights: [
+          '21 progressive Python exercises from Hello World to CrewAI intro',
+          'Covers variables, strings, lists, loops, dicts, tuples, functions',
+          'Includes JSON handling, OS module, lambda functions, and module imports'
+        ],
+        links: [
+          { label: 'Python Basics', href: '../Project_17_Python_AI/python_basics/' },
+          { label: 'Hello World', href: '../Project_17_Python_AI/python_basics/01_Hello.py' },
+          { label: 'CrewAI Intro', href: '../Project_17_Python_AI/python_basics/21_CREW_AI.py' }
+        ]
+      },
+      {
+        id: 18,
+        phase: 'Phase 4',
+        title: 'CrewAI Multi-Agent Systems',
+        objective: 'Build multi-agent AI crews for QA tasks including bug triage, JIRA test plan generation, and custom tool creation.',
+        focus: 'Multi-agent AI, CrewAI framework, QA automation',
+        stack: 'CrewAI, Python, JIRA API, custom tools, memory',
+        concept: 'Collaborative AI agents for QA workflows',
+        highlights: [
+          '7 progressive CrewAI examples from hello world to MCP integration',
+          'Bug triage crew with HTML report generation',
+          'JIRA-connected test plan agent with memory support'
+        ],
+        links: [
+          { label: 'Hello CrewAI', href: '../Project_18_CREW_AI_AGENT/crewai/01_hello_crewai.py' },
+          { label: 'Bug Triage Crew', href: '../Project_18_CREW_AI_AGENT/crewai/03_Building_QABugTriageCrew.py' },
+          { label: 'JIRA Agent with Memory', href: '../Project_18_CREW_AI_AGENT/crewai/06_FETCH_JIRA_CREATE_TEST_PLAN_AI_AGENT_Add_Memory.py' }
+        ]
+      },
+      {
+        id: 19,
+        phase: 'Phase 4',
+        title: 'MCP Server Creation',
+        objective: 'Learn to build custom MCP servers from scratch, progressing from simple calculators to real QA dashboard tools.',
+        focus: 'Custom MCP servers, tool creation, QA dashboards',
+        stack: 'Python, MCP SDK, FastAPI, test data',
+        concept: 'Building your own AI-connected tool servers',
+        highlights: [
+          'Hello World calculator MCP server',
+          'Weather MCP server with API integration',
+          'QA Dashboard MCP server with real test data'
+        ],
+        links: [
+          { label: 'Calculator MCP', href: '../Project_19_MCP_CREATION_AI_AGENT/src/01_HelloWorldCalculator_MCP.py' },
+          { label: 'QA Dashboard MCP', href: '../Project_19_MCP_CREATION_AI_AGENT/src/03_QA_Dashboard.py' },
+          { label: 'Real Data Dashboard', href: '../Project_19_MCP_CREATION_AI_AGENT/src/04_QA_Dashboard_REAL_DATA.py' }
+        ]
+      }
+    ];
+
+    const projectsContainer = document.getElementById('projectsContainer');
+    const buildProjectSections = () => {
+      projectsContainer.innerHTML = projects.map((project) => {
+        const links = project.links.map((link) => `
+          <a class="file-card" href="${link.href}">
+            <h3>${link.label}</h3>
+            <p>Open the relevant file or folder directly from the docs view.</p>
+            <small>${link.href}</small>
+          </a>
+        `).join('');
+
+        const highlights = project.highlights.map((item) => `<li>${item}</li>`).join('');
+        const note = project.note ? `
+          <div class="callout warning" style="margin-top: 16px;">
+            <h3>Current repo note</h3>
+            <p>${project.note}</p>
+          </div>
+        ` : '';
+
+        return `
+          <section class="project-section section" id="project-${project.id}">
+            <div class="project-meta">
+              <div>
+                <span class="section-kicker">${project.phase}</span>
+                <h2>Project ${project.id}: ${project.title}</h2>
+                <p>${project.objective}</p>
+              </div>
+              <span class="project-id">Project ${project.id}</span>
+            </div>
+
+            <div class="project-facts">
+              <div class="fact">
+                <h3>Focus</h3>
+                <p>${project.focus}</p>
+              </div>
+              <div class="fact">
+                <h3>Stack</h3>
+                <p>${project.stack}</p>
+              </div>
+              <div class="fact">
+                <h3>Key Concept</h3>
+                <p>${project.concept}</p>
+              </div>
+            </div>
+
+            <div class="cards-2" style="margin-top: 16px;">
+              <div class="callout">
+                <h3>What this project teaches</h3>
+                <ul class="list">${highlights}</ul>
+              </div>
+              <div class="callout">
+                <h3>Teaching usage</h3>
+                <p>Use this project when you want to explain <strong>${project.concept}</strong> through a concrete repo artifact rather than an abstract lecture. The docs page keeps the explanation short so you can drill into files live.</p>
+                <div class="tag-row">
+                  <span class="tag">${project.phase}</span>
+                  <span class="tag">Project ${project.id}</span>
+                </div>
+              </div>
+            </div>
+
+            ${note}
+
+            <div class="files-grid">
+              ${links}
+            </div>
+          </section>
+        `;
+      }).join('');
+    };
+
+    buildProjectSections();
+
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menuToggle');
+    const themeToggle = document.getElementById('themeToggle');
+    const searchInput = document.getElementById('sidebarSearch');
+    const navItems = Array.from(document.querySelectorAll('.nav-item[href^="#"]'));
+
+    menuToggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    const storedTheme = localStorage.getItem('aitb-docs-theme');
+    if (storedTheme) {
+      document.documentElement.setAttribute('data-theme', storedTheme);
+    }
+
+    themeToggle?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('aitb-docs-theme', next);
+    });
+
+    const closeSidebarOnMobile = () => {
+      if (window.innerWidth <= 920) sidebar.classList.remove('open');
+    };
+    navItems.forEach((link) => link.addEventListener('click', closeSidebarOnMobile));
+
+    searchInput?.addEventListener('input', (event) => {
+      const term = event.target.value.trim().toLowerCase();
+      document.querySelectorAll('.nav-item').forEach((item) => {
+        const text = item.textContent.toLowerCase();
+        item.classList.toggle('hidden', term && !text.includes(term));
+      });
+    });
+
+    window.addEventListener('keydown', (event) => {
+      if (event.key === '/' && document.activeElement !== searchInput) {
+        event.preventDefault();
+        searchInput?.focus();
+      }
+    });
+
+    const sections = Array.from(document.querySelectorAll('section[id]'));
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      const id = `#${visible.target.id}`;
+      navItems.forEach((item) => item.classList.toggle('active', item.getAttribute('href') === id));
+    }, { rootMargin: '-22% 0px -58% 0px', threshold: [0.15, 0.35] });
+
+    sections.forEach((section) => observer.observe(section));
+  </script>
+</body>
+
+</html>

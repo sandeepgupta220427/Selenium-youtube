@@ -1,0 +1,259 @@
+{
+    "id": "corrective-rag-crag",
+    "data": {
+        "nodes": [
+            {
+                "id": "ChatInput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 100,
+                    "y": 300
+                },
+                "data": {
+                    "type": "ChatInput",
+                    "node": {
+                        "display_name": "Chat Input"
+                    }
+                }
+            },
+            {
+                "id": "Retriever-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 400,
+                    "y": 300
+                },
+                "data": {
+                    "type": "Retriever",
+                    "node": {
+                        "display_name": "Vector Store Retriever",
+                        "template": {
+                            "search_kwargs": {
+                                "type": "dict",
+                                "value": {
+                                    "k": 4
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "GraderPrompt-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 700,
+                    "y": 200
+                },
+                "data": {
+                    "type": "Prompt",
+                    "node": {
+                        "display_name": "Document Grader",
+                        "template": {
+                            "template": {
+                                "type": "str",
+                                "value": "Score the relevance of this document to the question.\n\nDocument: {document}\nQuestion: {question}\n\nScore as:\n- CORRECT: The document directly addresses the question\n- AMBIGUOUS: The document is partially relevant\n- INCORRECT: The document is not relevant\n\nRespond with ONLY the score:"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "GraderLLM-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1000,
+                    "y": 200
+                },
+                "data": {
+                    "type": "ChatOpenAI",
+                    "node": {
+                        "display_name": "Grader LLM",
+                        "template": {
+                            "model_name": {
+                                "type": "str",
+                                "value": "gpt-4o-mini"
+                            },
+                            "temperature": {
+                                "type": "float",
+                                "value": 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "Router-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1300,
+                    "y": 300
+                },
+                "data": {
+                    "type": "ConditionalRouter",
+                    "node": {
+                        "display_name": "Quality Router",
+                        "template": {
+                            "conditions": {
+                                "type": "list",
+                                "value": [
+                                    {
+                                        "condition": "contains 'CORRECT'",
+                                        "target": "UseRetrieved"
+                                    },
+                                    {
+                                        "condition": "contains 'AMBIGUOUS'",
+                                        "target": "CombineWithWeb"
+                                    },
+                                    {
+                                        "condition": "default",
+                                        "target": "WebSearchOnly"
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "TavilySearch-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1300,
+                    "y": 500
+                },
+                "data": {
+                    "type": "TavilySearchResults",
+                    "node": {
+                        "display_name": "Tavily Web Search",
+                        "description": "Fallback web search for poor-quality retrievals",
+                        "template": {
+                            "max_results": {
+                                "type": "int",
+                                "value": 3
+                            },
+                            "tavily_api_key": {
+                                "type": "str",
+                                "value": "",
+                                "password": true
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "FinalPrompt-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1600,
+                    "y": 300
+                },
+                "data": {
+                    "type": "Prompt",
+                    "node": {
+                        "display_name": "Final Answer Prompt",
+                        "template": {
+                            "template": {
+                                "type": "str",
+                                "value": "Answer the question using the provided context.\n\nContext: {context}\nQuestion: {question}\n\nProvide a detailed, accurate answer:"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "GeneratorLLM-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1900,
+                    "y": 300
+                },
+                "data": {
+                    "type": "ChatOpenAI",
+                    "node": {
+                        "display_name": "Generator LLM",
+                        "template": {
+                            "model_name": {
+                                "type": "str",
+                                "value": "gpt-4o-mini"
+                            },
+                            "temperature": {
+                                "type": "float",
+                                "value": 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ChatOutput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 2200,
+                    "y": 300
+                },
+                "data": {
+                    "type": "ChatOutput",
+                    "node": {
+                        "display_name": "Chat Output"
+                    }
+                }
+            }
+        ],
+        "edges": [
+            {
+                "source": "ChatInput-1",
+                "target": "Retriever-1"
+            },
+            {
+                "source": "Retriever-1",
+                "target": "GraderPrompt-1",
+                "targetHandle": "document"
+            },
+            {
+                "source": "ChatInput-1",
+                "target": "GraderPrompt-1",
+                "targetHandle": "question"
+            },
+            {
+                "source": "GraderPrompt-1",
+                "target": "GraderLLM-1"
+            },
+            {
+                "source": "GraderLLM-1",
+                "target": "Router-1"
+            },
+            {
+                "source": "Router-1",
+                "target": "FinalPrompt-1",
+                "sourceHandle": "correct"
+            },
+            {
+                "source": "Router-1",
+                "target": "TavilySearch-1",
+                "sourceHandle": "incorrect"
+            },
+            {
+                "source": "TavilySearch-1",
+                "target": "FinalPrompt-1",
+                "targetHandle": "context"
+            },
+            {
+                "source": "ChatInput-1",
+                "target": "FinalPrompt-1",
+                "targetHandle": "question"
+            },
+            {
+                "source": "FinalPrompt-1",
+                "target": "GeneratorLLM-1"
+            },
+            {
+                "source": "GeneratorLLM-1",
+                "target": "ChatOutput-1"
+            }
+        ]
+    },
+    "description": "Corrective RAG with document grading (CORRECT/AMBIGUOUS/INCORRECT) and Tavily web search fallback",
+    "name": "Corrective RAG (CRAG)",
+    "endpoint_name": "corrective-rag"
+}

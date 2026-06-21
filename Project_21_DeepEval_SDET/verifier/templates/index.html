@@ -1,0 +1,373 @@
+{% extends "_base.html" %}
+{% set nav_active = "evaluator" %}
+{% block title %}DeepEval Metric Verifier — Evaluator{% endblock %}
+
+{% block styles %}
+.container { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.full-width { grid-column: 1 / -1; }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+.card-title { font-size: 14px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.metric-btn { background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; padding: 12px; cursor: pointer; transition: all 0.2s; text-align: left; }
+.metric-btn:hover { border-color: var(--accent-dim); background: var(--bg-hover); }
+.metric-btn.active { border-color: var(--accent); background: var(--accent-glow); }
+.metric-btn .name { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+.metric-btn .desc { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
+.metric-btn .category { font-size: 10px; color: var(--accent-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-dim); margin-bottom: 6px; }
+.form-group label .required { color: var(--red); margin-left: 2px; }
+input[type="text"], textarea, select { width: 100%; background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 14px; font-family: inherit; }
+input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+textarea { resize: vertical; min-height: 80px; }
+.context-list { display: flex; flex-direction: column; gap: 8px; }
+.context-item { display: flex; gap: 8px; }
+.context-item textarea { flex: 1; min-height: 60px; }
+.context-item .remove-btn { background: var(--red-dim); border: 1px solid rgba(239,68,68,0.3); color: var(--red); border-radius: 6px; width: 32px; height: 32px; cursor: pointer; font-size: 16px; flex-shrink: 0; }
+.add-context-btn { background: var(--accent-glow); border: 1px dashed var(--accent-dim); color: var(--accent); border-radius: 8px; padding: 8px 16px; cursor: pointer; font-size: 13px; margin-top: 8px; }
+.threshold-row { display: flex; align-items: center; gap: 12px; }
+.threshold-row input[type="range"] { flex: 1; -webkit-appearance: none; background: var(--bg-input); border-radius: 4px; height: 6px; }
+.threshold-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; }
+.threshold-value { font-size: 16px; font-weight: 700; color: var(--accent); min-width: 40px; }
+.btn-row { display: flex; gap: 12px; margin-top: 20px; }
+.btn { padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 8px; }
+.btn-primary { background: var(--accent); color: #ffffff; flex: 1; justify-content: center; font-weight: 600; }
+.btn-primary:hover { background: var(--accent-dim); }
+.btn-primary:disabled { background: var(--text-muted); cursor: not-allowed; }
+.btn-secondary { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-dim); }
+.btn-chatbot { background: var(--yellow-dim); border: 1px solid rgba(234,179,8,0.3); color: var(--yellow); }
+.status-bar { display: flex; align-items: center; gap: 16px; padding: 10px 16px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 20px; font-size: 13px; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.status-dot.offline { background: var(--red); }
+.score-display { text-align: center; padding: 32px; border-radius: 12px; margin-bottom: 16px; }
+.score-display.pass { background: var(--green-dim); border: 1px solid rgba(34,197,94,0.3); }
+.score-display.fail { background: var(--red-dim); border: 1px solid rgba(239,68,68,0.3); }
+.score-number { font-size: 56px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+.score-display.pass .score-number { color: var(--green); }
+.score-display.fail .score-number { color: var(--red); }
+.reason-box { background: var(--bg-input); border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+.reason-box h4 { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
+.reason-box p { font-size: 14px; color: var(--text-dim); line-height: 1.6; }
+.multi-results { display: flex; flex-direction: column; gap: 8px; }
+.result-row { display: flex; align-items: center; gap: 12px; background: var(--bg-input); border-radius: 8px; padding: 12px 14px; }
+.result-row .metric-name { font-size: 13px; font-weight: 600; min-width: 150px; }
+.result-row .score-bar { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+.result-row .score-fill { height: 100%; transition: width 0.5s; }
+.result-row .score-fill.pass { background: var(--green); }
+.result-row .score-fill.fail { background: var(--red); }
+.result-row .score-val { font-size: 13px; font-weight: 700; min-width: 50px; text-align: right; }
+.result-row .score-val.pass { color: var(--green); }
+.result-row .score-val.fail { color: var(--red); }
+.loading-overlay { display: none; position: fixed; inset: 0; background: rgba(10,26,26,0.85); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; gap: 16px; }
+.loading-overlay.active { display: flex; }
+.spinner { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (max-width: 768px) { .container { grid-template-columns: 1fr; } .metric-grid { grid-template-columns: repeat(2, 1fr); } }
+{% endblock %}
+
+{% block content %}
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div id="loadingText" style="color: var(--text-dim);">Running DeepEval metric...</div>
+</div>
+
+<div class="container">
+    <div>
+        <div class="status-bar">
+            <div class="status-dot" id="chatbotStatus"></div>
+            <span id="chatbotStatusText">Checking...</span>
+            <span style="color: var(--border);">|</span>
+            <span style="color: var(--text-dim);">Chatbot: <code style="color: var(--yellow);">:8100</code></span>
+            <span style="color: var(--border);">|</span>
+            <span style="color: var(--text-dim);">Verifier: <code style="color: var(--accent);">:5180</code></span>
+            <span style="color: var(--border);">|</span>
+            <span style="color: var(--text-dim);">Judge: GPT-4o-mini</span>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Select Metric</div>
+            <div class="metric-grid" id="metricGrid"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Test Case Input</div>
+
+            <div class="form-group">
+                <label>Query / User Input <span class="required">*</span></label>
+                <input type="text" id="queryInput" placeholder="e.g., What is your refund policy?">
+            </div>
+
+            <button class="btn btn-chatbot" onclick="askChatbot()" id="askChatbotBtn" style="margin-bottom: 16px;">
+                Ask ShopEasy Chatbot (:8100)
+            </button>
+
+            <div class="form-group">
+                <label>Actual Output <span class="required">*</span></label>
+                <textarea id="actualOutput" placeholder="The chatbot's response..." rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Expected Output (optional, required for Precision/Recall)</label>
+                <textarea id="expectedOutput" placeholder="Reference answer" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Retrieval Context (RAG chunks)</label>
+                <div class="context-list" id="contextList">
+                    <div class="context-item"><textarea placeholder="Context 1" class="context-input"></textarea></div>
+                </div>
+                <button class="add-context-btn" onclick="addContext()">+ Add Context</button>
+            </div>
+
+            <div class="form-group">
+                <label>Threshold</label>
+                <div class="threshold-row">
+                    <input type="range" id="thresholdSlider" min="0" max="1" step="0.05" value="0.7" oninput="updateThreshold()">
+                    <span class="threshold-value" id="thresholdValue">0.70</span>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn btn-primary" onclick="runEvaluation()">Click for Evaluation</button>
+                <button class="btn btn-secondary" onclick="runAllMetrics()">Run All Metrics</button>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="card" id="singleResult" style="display: none;">
+            <div class="card-title">Evaluation Result</div>
+            <div id="scoreDisplay"></div>
+            <div id="reasonBox"></div>
+            <div id="metaInfo"></div>
+        </div>
+
+        <div class="card" id="multiResult" style="display: none;">
+            <div class="card-title">Multi-Metric Results</div>
+            <div id="multiSummary"></div>
+            <div class="multi-results" id="multiResultsList"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Evaluation Architecture</div>
+            <div style="font-size: 13px; color: var(--text-dim); line-height: 2; text-align: center;">
+                <div><span style="background: var(--accent-glow); color: var(--accent); padding: 4px 12px; border-radius: 4px;">User Query</span> &rarr; <span style="background: var(--yellow-dim); color: var(--yellow); padding: 4px 12px; border-radius: 4px;">Chatbot</span> &rarr; <span style="background: var(--purple-dim); color: var(--purple); padding: 4px 12px; border-radius: 4px;">LLM Output</span></div>
+                <div>&darr;</div>
+                <div><span style="background: var(--purple-dim); color: var(--purple); padding: 4px 12px; border-radius: 4px;">Output + Context</span> &rarr; <span style="background: var(--red-dim); color: var(--red); padding: 4px 12px; border-radius: 4px;">DeepEval</span> &rarr; <span style="background: var(--green-dim); color: var(--green); padding: 4px 12px; border-radius: 4px;">Score</span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const metrics = [
+        {id: 'faithfulness', name: 'Faithfulness', category: 'Answer Quality', desc: 'Stuck to source?'},
+        {id: 'answer_relevancy', name: 'Answer Relevancy', category: 'Answer Quality', desc: 'Answered the question?'},
+        {id: 'hallucination', name: 'Hallucination', category: 'Answer Quality', desc: 'Made up facts?'},
+        {id: 'contextual_precision', name: 'Contextual Precision', category: 'Context Quality', desc: 'Relevant chunks ranked high?'},
+        {id: 'contextual_recall', name: 'Contextual Recall', category: 'Context Quality', desc: 'All needed chunks retrieved?'},
+        {id: 'contextual_relevancy', name: 'Contextual Relevancy', category: 'Context Quality', desc: 'Context relevant to query?'},
+        {id: 'bias', name: 'Bias', category: 'Safety', desc: 'Contains bias?'},
+        {id: 'toxicity', name: 'Toxicity', category: 'Safety', desc: 'Contains toxic content?'},
+        {id: 'completeness', name: 'Completeness', category: 'Presentation', desc: 'All parts present?'},
+    ];
+    let selectedMetric = 'faithfulness';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderMetricGrid();
+        checkChatbotStatus();
+        checkForSampleLoad();
+    });
+
+    function renderMetricGrid() {
+        const grid = document.getElementById('metricGrid');
+        grid.innerHTML = metrics.map(m => `
+            <button class="metric-btn ${m.id === selectedMetric ? 'active' : ''}" onclick="selectMetric('${m.id}')">
+                <div class="category">${m.category}</div>
+                <div class="name">${m.name}</div>
+                <div class="desc">${m.desc}</div>
+            </button>
+        `).join('');
+    }
+
+    function selectMetric(id) { selectedMetric = id; renderMetricGrid(); }
+
+    async function checkChatbotStatus() {
+        try {
+            const resp = await fetch('/health');
+            const data = await resp.json();
+            const dot = document.getElementById('chatbotStatus');
+            const text = document.getElementById('chatbotStatusText');
+            if (data.chatbot_connected) { dot.className = 'status-dot'; text.textContent = 'Chatbot connected'; }
+            else { dot.className = 'status-dot offline'; text.textContent = 'Chatbot offline'; }
+        } catch(e) {}
+    }
+
+    async function askChatbot() {
+        const query = document.getElementById('queryInput').value.trim();
+        if (!query) { alert('Enter a query first'); return; }
+        const btn = document.getElementById('askChatbotBtn');
+        btn.disabled = true; btn.textContent = 'Asking...';
+        try {
+            const resp = await fetch('/api/chatbot', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({message: query}),
+            });
+            const data = await resp.json();
+            if (data.success) {
+                document.getElementById('actualOutput').value = data.reply;
+                const contexts = data.retrieval_context || [];
+                const list = document.getElementById('contextList');
+                list.innerHTML = '';
+                contexts.forEach((ctx, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'context-item';
+                    div.innerHTML = `<textarea placeholder="Context ${i+1}" class="context-input">${escapeHtml(ctx)}</textarea>${i>0?'<button class="remove-btn" onclick="this.parentElement.remove()">×</button>':''}`;
+                    list.appendChild(div);
+                });
+                if (contexts.length === 0) addContext();
+            } else { alert('Chatbot error: ' + data.error); }
+        } catch(e) { alert('Failed: ' + e.message); }
+        btn.disabled = false; btn.textContent = 'Ask ShopEasy Chatbot (:8100)';
+    }
+
+    function addContext() {
+        const list = document.getElementById('contextList');
+        const count = list.children.length + 1;
+        const div = document.createElement('div');
+        div.className = 'context-item';
+        div.innerHTML = `<textarea placeholder="Context ${count}" class="context-input"></textarea><button class="remove-btn" onclick="this.parentElement.remove()">×</button>`;
+        list.appendChild(div);
+    }
+
+    function getContexts() {
+        return Array.from(document.querySelectorAll('.context-input')).map(t => t.value.trim()).filter(v => v);
+    }
+
+    function updateThreshold() {
+        const val = document.getElementById('thresholdSlider').value;
+        document.getElementById('thresholdValue').textContent = parseFloat(val).toFixed(2);
+    }
+
+    async function runEvaluation() {
+        const query = document.getElementById('queryInput').value.trim();
+        const actualOutput = document.getElementById('actualOutput').value.trim();
+        if (!query || !actualOutput) { alert('Query and Actual Output required'); return; }
+
+        showLoading('Evaluating ' + metrics.find(m => m.id === selectedMetric)?.name + '...');
+        const payload = {
+            metric: selectedMetric, query, actual_output: actualOutput,
+            expected_output: document.getElementById('expectedOutput').value.trim(),
+            retrieval_context: getContexts(),
+            threshold: parseFloat(document.getElementById('thresholdSlider').value),
+            model: 'gpt-4o-mini',
+        };
+        try {
+            const resp = await fetch('/api/evaluate', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload),
+            });
+            const data = await resp.json();
+            hideLoading();
+            showSingleResult(data);
+        } catch(e) { hideLoading(); alert('Failed: ' + e.message); }
+    }
+
+    async function runAllMetrics() {
+        const query = document.getElementById('queryInput').value.trim();
+        const actualOutput = document.getElementById('actualOutput').value.trim();
+        if (!query || !actualOutput) { alert('Query and Actual Output required'); return; }
+
+        showLoading('Running all metrics... 30-60s');
+        try {
+            const resp = await fetch('/api/evaluate-multi', {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    metrics: metrics.map(m => m.id),
+                    query, actual_output: actualOutput,
+                    expected_output: document.getElementById('expectedOutput').value.trim(),
+                    retrieval_context: getContexts(),
+                    threshold: parseFloat(document.getElementById('thresholdSlider').value),
+                    model: 'gpt-4o-mini',
+                }),
+            });
+            const data = await resp.json();
+            hideLoading();
+            showMultiResult(data);
+        } catch(e) { hideLoading(); alert('Failed: ' + e.message); }
+    }
+
+    function showSingleResult(data) {
+        document.getElementById('singleResult').style.display = 'block';
+        document.getElementById('multiResult').style.display = 'none';
+        const metricName = metrics.find(m => m.id === data.metric)?.name || data.metric;
+
+        if (data.success) {
+            const pct = (data.score * 100).toFixed(1);
+            document.getElementById('scoreDisplay').innerHTML = `
+                <div class="score-display ${data.passed ? 'pass' : 'fail'}">
+                    <div style="font-size: 13px; text-transform: uppercase; margin-bottom: 4px;">${metricName}</div>
+                    <div class="score-number">${pct}%</div>
+                    <div style="margin-top: 8px;">${data.passed ? '&#x2705; PASSED' : '&#x274C; FAILED'} (threshold: ${(data.threshold*100).toFixed(0)}%)</div>
+                </div>`;
+            document.getElementById('reasonBox').innerHTML = data.reason ? `<div class="reason-box"><h4>Reasoning</h4><p>${escapeHtml(data.reason)}</p></div>` : '';
+            document.getElementById('metaInfo').innerHTML = `<div style="font-size: 12px; color: var(--text-muted);">Time: ${data.elapsed_seconds}s &bull; Judge: GPT-4o-mini</div>`;
+        } else {
+            document.getElementById('scoreDisplay').innerHTML = `<div class="score-display fail"><div class="score-number">ERR</div></div>`;
+            document.getElementById('reasonBox').innerHTML = `<div class="reason-box"><h4>Error</h4><p>${escapeHtml(data.error)}</p></div>`;
+        }
+    }
+
+    function showMultiResult(data) {
+        document.getElementById('singleResult').style.display = 'none';
+        document.getElementById('multiResult').style.display = 'block';
+        document.getElementById('multiSummary').innerHTML = `
+            <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+                <div style="flex: 1; text-align: center; padding: 12px; background: var(--green-dim); border-radius: 8px;"><div style="font-size: 24px; font-weight: 800; color: var(--green);">${data.summary.passed}</div><div style="font-size: 11px; color: var(--green);">Passed</div></div>
+                <div style="flex: 1; text-align: center; padding: 12px; background: var(--red-dim); border-radius: 8px;"><div style="font-size: 24px; font-weight: 800; color: var(--red);">${data.summary.failed}</div><div style="font-size: 11px; color: var(--red);">Failed</div></div>
+                <div style="flex: 1; text-align: center; padding: 12px; background: var(--accent-glow); border-radius: 8px;"><div style="font-size: 24px; font-weight: 800; color: var(--accent);">${data.summary.total}</div><div style="font-size: 11px; color: var(--accent);">Total</div></div>
+            </div>`;
+        document.getElementById('multiResultsList').innerHTML = data.results.map(r => {
+            const score = r.score || 0; const pct = (score*100).toFixed(1);
+            const name = metrics.find(m => m.id === r.metric)?.name || r.metric;
+            return `<div class="result-row">
+                <span style="font-size: 16px;">${r.passed ? '&#x2705;' : '&#x274C;'}</span>
+                <span class="metric-name">${name}</span>
+                <div class="score-bar"><div class="score-fill ${r.passed ? 'pass' : 'fail'}" style="width: ${pct}%"></div></div>
+                <span class="score-val ${r.passed ? 'pass' : 'fail'}">${pct}%</span>
+            </div>`;
+        }).join('');
+    }
+
+    function showLoading(text) {
+        document.getElementById('loadingText').textContent = text;
+        document.getElementById('loadingOverlay').classList.add('active');
+    }
+    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
+
+    function checkForSampleLoad() {
+        const data = sessionStorage.getItem('loadSample');
+        if (!data) return;
+        sessionStorage.removeItem('loadSample');
+        try {
+            const s = JSON.parse(data);
+            document.getElementById('queryInput').value = s.query || '';
+            document.getElementById('actualOutput').value = s.actual_output || '';
+            document.getElementById('expectedOutput').value = s.expected_output || '';
+            const list = document.getElementById('contextList');
+            list.innerHTML = '';
+            const contexts = s.retrieval_context || [];
+            contexts.forEach((ctx, i) => {
+                const div = document.createElement('div');
+                div.className = 'context-item';
+                div.innerHTML = `<textarea placeholder="Context ${i+1}" class="context-input">${escapeHtml(ctx)}</textarea>${i>0?'<button class="remove-btn" onclick="this.parentElement.remove()">×</button>':''}`;
+                list.appendChild(div);
+            });
+            if (contexts.length === 0) addContext();
+            if (s.recommended_metrics && s.recommended_metrics.length > 0) selectMetric(s.recommended_metrics[0]);
+        } catch(e) {}
+    }
+
+    function escapeHtml(str) { if (!str) return ''; const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+</script>
+{% endblock %}

@@ -1,0 +1,87 @@
+{
+  "name": "AI_Batch_001",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -368,
+        -144
+      ],
+      "id": "6b8a194e-dc73-4414-82d5-cb9fa044231b",
+      "name": "When chat message received",
+      "webhookId": "5aff28f9-5dc1-4d00-a139-1bf4397092da"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -128,
+        -144
+      ],
+      "id": "79b98be1-c20d-48d8-a463-4800be68c200",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        64
+      ],
+      "id": "24dfec0f-07ef-4968-ad2d-a6405fc09010",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "BZphVryzZr6MG1h0",
+          "name": "Groq account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "73ebb486-5ce0-4be8-8bf0-7c317ce265c5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c5b7d69aef09d65f6d843dbeb419620198dba9448e9bb3bd16f598faf54bf9f9"
+  },
+  "id": "KZ57F5ZYiQsSn1pI",
+  "tags": []
+}

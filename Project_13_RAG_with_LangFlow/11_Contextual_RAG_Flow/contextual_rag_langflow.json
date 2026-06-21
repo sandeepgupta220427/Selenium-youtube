@@ -1,0 +1,385 @@
+{
+    "id": "contextual-rag",
+    "data": {
+        "nodes": [
+            {
+                "id": "File-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 100,
+                    "y": 200
+                },
+                "data": {
+                    "type": "File",
+                    "node": {
+                        "display_name": "File Loader"
+                    }
+                }
+            },
+            {
+                "id": "TextSplitter-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 400,
+                    "y": 200
+                },
+                "data": {
+                    "type": "RecursiveCharacterTextSplitter",
+                    "node": {
+                        "display_name": "Text Splitter",
+                        "template": {
+                            "chunk_size": {
+                                "type": "int",
+                                "value": 1000
+                            },
+                            "chunk_overlap": {
+                                "type": "int",
+                                "value": 200
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ContextPrompt-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 700,
+                    "y": 100
+                },
+                "data": {
+                    "type": "Prompt",
+                    "node": {
+                        "display_name": "Context Generation Prompt",
+                        "description": "Generate context for each chunk using the full document",
+                        "template": {
+                            "template": {
+                                "type": "str",
+                                "value": "Here is the full document:\n<document>\n{document}\n</document>\n\nHere is a chunk from that document:\n<chunk>\n{chunk}\n</chunk>\n\nPlease provide a short context (2-3 sentences) explaining:\n1. What document/section this chunk belongs to\n2. What the chunk is specifically about\n3. Key entities or identifiers mentioned\n\nContext:"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ContextLLM-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1000,
+                    "y": 100
+                },
+                "data": {
+                    "type": "ChatOpenAI",
+                    "node": {
+                        "display_name": "Context Generator (GPT-4o-mini)",
+                        "description": "Generates chunk context — called once per chunk during indexing",
+                        "template": {
+                            "model_name": {
+                                "type": "str",
+                                "value": "gpt-4o-mini"
+                            },
+                            "temperature": {
+                                "type": "float",
+                                "value": 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ContextMerge-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1000,
+                    "y": 300
+                },
+                "data": {
+                    "type": "CustomComponent",
+                    "node": {
+                        "display_name": "Prepend Context to Chunk",
+                        "description": "Merges the generated context with the original chunk: '{context}\\n\\n{chunk}'"
+                    }
+                }
+            },
+            {
+                "id": "Embeddings-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1300,
+                    "y": 400
+                },
+                "data": {
+                    "type": "OpenAIEmbeddings",
+                    "node": {
+                        "display_name": "OpenAI Embeddings",
+                        "template": {
+                            "model": {
+                                "type": "str",
+                                "value": "text-embedding-3-small"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "VectorStore-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1300,
+                    "y": 200
+                },
+                "data": {
+                    "type": "Chroma",
+                    "node": {
+                        "display_name": "Chroma (Enriched Chunks)",
+                        "template": {
+                            "collection_name": {
+                                "type": "str",
+                                "value": "contextual_rag"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "BM25-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1600,
+                    "y": 100
+                },
+                "data": {
+                    "type": "BM25Retriever",
+                    "node": {
+                        "display_name": "BM25 (Contextual)",
+                        "template": {
+                            "k": {
+                                "type": "int",
+                                "value": 20
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "VectorRetriever-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1600,
+                    "y": 300
+                },
+                "data": {
+                    "type": "Retriever",
+                    "node": {
+                        "display_name": "Vector Retriever (Contextual)",
+                        "template": {
+                            "search_kwargs": {
+                                "type": "dict",
+                                "value": {
+                                    "k": 20
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "Ensemble-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1900,
+                    "y": 200
+                },
+                "data": {
+                    "type": "EnsembleRetriever",
+                    "node": {
+                        "display_name": "Ensemble (BM25=0.4 + Vector=0.6)",
+                        "template": {
+                            "weights": {
+                                "type": "list",
+                                "value": [
+                                    0.4,
+                                    0.6
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "Reranker-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 2200,
+                    "y": 200
+                },
+                "data": {
+                    "type": "CohereRerank",
+                    "node": {
+                        "display_name": "Cohere Rerank (top_n=5)",
+                        "template": {
+                            "model": {
+                                "type": "str",
+                                "value": "rerank-english-v3.0"
+                            },
+                            "top_n": {
+                                "type": "int",
+                                "value": 5
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ChatInput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1900,
+                    "y": 450
+                },
+                "data": {
+                    "type": "ChatInput",
+                    "node": {
+                        "display_name": "Chat Input"
+                    }
+                }
+            },
+            {
+                "id": "FinalPrompt-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 2500,
+                    "y": 300
+                },
+                "data": {
+                    "type": "Prompt",
+                    "node": {
+                        "display_name": "RAG Prompt",
+                        "template": {
+                            "template": {
+                                "type": "str",
+                                "value": "Answer the question using the provided context.\n\nContext:\n{context}\n\nQuestion: {question}\n\nAnswer:"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "GeneratorLLM-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 2800,
+                    "y": 300
+                },
+                "data": {
+                    "type": "ChatOpenAI",
+                    "node": {
+                        "display_name": "ChatOpenAI (Generator)",
+                        "template": {
+                            "model_name": {
+                                "type": "str",
+                                "value": "gpt-4o-mini"
+                            },
+                            "temperature": {
+                                "type": "float",
+                                "value": 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ChatOutput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 3100,
+                    "y": 300
+                },
+                "data": {
+                    "type": "ChatOutput",
+                    "node": {
+                        "display_name": "Chat Output"
+                    }
+                }
+            }
+        ],
+        "edges": [
+            {
+                "source": "File-1",
+                "target": "TextSplitter-1"
+            },
+            {
+                "source": "TextSplitter-1",
+                "target": "ContextPrompt-1",
+                "targetHandle": "chunk"
+            },
+            {
+                "source": "File-1",
+                "target": "ContextPrompt-1",
+                "targetHandle": "document"
+            },
+            {
+                "source": "ContextPrompt-1",
+                "target": "ContextLLM-1"
+            },
+            {
+                "source": "ContextLLM-1",
+                "target": "ContextMerge-1"
+            },
+            {
+                "source": "ContextMerge-1",
+                "target": "VectorStore-1",
+                "targetHandle": "documents"
+            },
+            {
+                "source": "Embeddings-1",
+                "target": "VectorStore-1",
+                "targetHandle": "embeddings"
+            },
+            {
+                "source": "ContextMerge-1",
+                "target": "BM25-1",
+                "targetHandle": "documents"
+            },
+            {
+                "source": "VectorStore-1",
+                "target": "VectorRetriever-1"
+            },
+            {
+                "source": "BM25-1",
+                "target": "Ensemble-1",
+                "targetHandle": "retriever_1"
+            },
+            {
+                "source": "VectorRetriever-1",
+                "target": "Ensemble-1",
+                "targetHandle": "retriever_2"
+            },
+            {
+                "source": "Ensemble-1",
+                "target": "Reranker-1"
+            },
+            {
+                "source": "Reranker-1",
+                "target": "FinalPrompt-1",
+                "targetHandle": "context"
+            },
+            {
+                "source": "ChatInput-1",
+                "target": "FinalPrompt-1",
+                "targetHandle": "question"
+            },
+            {
+                "source": "FinalPrompt-1",
+                "target": "GeneratorLLM-1"
+            },
+            {
+                "source": "GeneratorLLM-1",
+                "target": "ChatOutput-1"
+            }
+        ]
+    },
+    "description": "Contextual RAG (Anthropic's approach): Context enrichment → Contextual BM25 + Vector → Ensemble → Rerank → Generate. 67% fewer retrieval failures.",
+    "name": "Contextual RAG Pipeline",
+    "endpoint_name": "contextual-rag"
+}

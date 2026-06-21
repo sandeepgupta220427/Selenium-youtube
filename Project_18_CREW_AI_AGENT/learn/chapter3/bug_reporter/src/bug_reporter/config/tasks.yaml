@@ -1,0 +1,14 @@
+generate_bug_report:
+  description: >
+    Review the simulated screenshot layout metadata: '{screenshot_metadata}'.
+    Write a detailed, formal bug report with Title, Steps to Reproduce (hypothetical), Expected vs Actual result.
+  expected_output: >
+    A clear and concise bug report format.
+  agent: qa_reporter
+
+triage_bug_report:
+  description: >
+    Take the bug report from the previous task and assign a Severity (Critical, High, Medium, Low) and Priority (P1, P2, P3, P4). Add a brief justification for the priority.
+  expected_output: >
+    A Markdown document adding triage details to the existing bug report.
+  agent: dev_triage

@@ -1,0 +1,15 @@
+plan_creation_task:
+  description: >
+    Analyze the feature: '{feature_description}'.
+    Create a high-level Test Plan outlining the scope, objectives, and test strategy.
+  expected_output: >
+    A Markdown document containing the Test Plan.
+  agent: test_manager
+
+case_creation_task:
+  description: >
+    Based on the Test Plan from the previous step, write 3 to 5 detailed test cases.
+    Ensure each test case has a Title, Pre-conditions, Steps, and Expected Result.
+  expected_output: >
+    A Markdown document containing detailed Test Cases.
+  agent: test_engineer

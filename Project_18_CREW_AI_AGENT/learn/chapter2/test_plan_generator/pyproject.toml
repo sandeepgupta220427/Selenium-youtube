@@ -1,0 +1,25 @@
+[project]
+name = "test_plan_generator"
+version = "0.1.0"
+description = "test_plan_generator using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[tools]==1.11.1",
+    "litellm>=1.82.6",
+]
+
+[project.scripts]
+test_plan_generator = "test_plan_generator.main:run"
+run_crew = "test_plan_generator.main:run"
+train = "test_plan_generator.main:train"
+replay = "test_plan_generator.main:replay"
+test = "test_plan_generator.main:test"
+run_with_trigger = "test_plan_generator.main:run_with_trigger"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"

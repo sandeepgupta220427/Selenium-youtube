@@ -1,0 +1,15 @@
+analyze_jira_issue:
+  description: >
+    Review the simulated Jira Ticket describing the incident: '{jira_ticket_details}'.
+    Perform a root cause analysis using the 5 Whys technique and technical deduction.
+  expected_output: >
+    A report explaining the technical Root Cause of the incident.
+  agent: devops_engineer
+
+generate_rca_doc:
+  description: >
+    Based on the DevOps analysis, create a formal Root Cause Analysis (RCA) document.
+    It MUST contain: 1) Incident Summary 2) Timeline (inferred) 3) Root Cause 4) Action Items for prevention.
+  expected_output: >
+    A Markdown document representing the final Root Cause Analysis report.
+  agent: post_mortem_writer

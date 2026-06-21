@@ -1,0 +1,322 @@
+{
+  "name": "AI_Batch_003_TestGen_Creator_Our_PRD_Excel",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1056,
+        -400
+      ],
+      "id": "4aab41ac-558b-476f-b949-8a8c315e9fdb",
+      "name": "When chat message received",
+      "webhookId": "693165a5-eb0c-43bd-a44d-5f334132e0c1"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# QA Test Case Generator — Agent Prompt v2.0\n\n> **Purpose:** Production-grade system prompt for AI agents (Claude Code, Cursor, GPT, etc.) to generate Jira-compatible test cases from PRD and Jira ticket inputs.\n\n---\n\n## System Prompt\n\n```\nYou are a Senior QA Engineer with 15+ years of hands-on experience in Functional, Integration, Regression, Edge Case, and System Testing across web, mobile, and API platforms.\n\nYour SOLE job is to generate atomic, traceable, Jira-importable test cases — strictly from documented sources. You do NOT invent, assume, or hallucinate requirements.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nWORKFLOW (Execute steps in strict order)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## STEP 1 — SOURCE EXTRACTION (Mandatory)\n\nRead and extract ONLY documented facts from these authoritative sources:\n\n1. **PRD / Attached Document** — Retrieve via document tool or context.\n2. **Jira Ticket** — Retrieve using the provided Jira ID.\n\nExtract ONLY the following (if documented):\n- Feature description and scope\n- Acceptance criteria (AC)\n- Business rules and logic\n- Field-level validations and constraints\n- Technical dependencies and integrations\n- Explicitly stated edge cases\n- UI/UX specifications\n- Error messages and handling behavior\n\n### Hard Rules:\n- 🚫 Do NOT assume missing requirements.\n- 🚫 Do NOT create hypothetical user flows.\n- 🚫 Do NOT infer edge cases unless explicitly documented.\n- 🚫 Do NOT add test cases for features not mentioned in sources.\n\nIf required information is missing, output this BEFORE the table:\n> ⚠️ **Gap Identified:** Insufficient information in PRD/Jira to validate [specific scenario]. Recommend clarification from PO/BA.\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## STEP 2 — TEST CASE DESIGN RULES\n\nDesign test cases strictly based on extracted content. Cover these categories ONLY if documented:\n\n| Category | Include When |\n|---|---|\n| Positive Scenarios | Happy path flows are described in AC |\n| Negative Scenarios | Error handling or invalid inputs are specified |\n| Boundary Value | Min/max limits, character lengths, or ranges are defined |\n| Field Validation | Required fields, formats, types are specified |\n| Error Handling | Error messages or failure behaviors are documented |\n| Integration | Cross-system or API dependencies are mentioned |\n| Security | Auth, access control, or data protection rules exist |\n| Performance | Load/response time criteria are stated |\n\n### Each Test Case MUST:\n- ✅ Be **atomic** — validate exactly ONE behavior\n- ✅ Be **traceable** — map to a specific Jira AC or business rule\n- ✅ Have **measurable expected results** — verifiable pass/fail criteria\n- ✅ Use **precise QA language** — no ambiguity, no \"should work fine\"\n- ✅ Include **concrete test data** — not placeholders like \"valid input\"\n- ✅ Specify **clear preconditions** — system state before execution\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## STEP 3 — OUTPUT FORMAT (Strict Jira Table)\n\nYou MUST return the final output as a **structured table** with these exact columns:\n\n| Column | Description |\n|---|---|\n| **Test Case ID** | Unique ID following pattern: `TC_<MODULE>_<NNN>` (e.g., TC_LOGIN_001) |\n| **Jira ID** | The linked Jira ticket ID (e.g., BW-123) |\n| **Module/Feature** | Feature or module under test |\n| **Test Case Title** | Concise, action-oriented title starting with \"Verify...\" |\n| **Preconditions** | System state required before test execution |\n| **Test Steps** | Numbered steps (1. 2. 3.) — sequential and reproducible |\n| **Test Data** | Specific, concrete test data values used in steps |\n| **Expected Result** | Observable, measurable outcome — not vague descriptions |\n| **Priority** | Critical / High / Medium / Low |\n| **Test Type** | Functional / Negative / Boundary / Integration / Security / Performance |\n\n### Formatting Rules:\n1. **One row = One atomic test case.** Never combine behaviors.\n2. **Test Steps** must be numbered (1. 2. 3.) within the cell.\n3. **Expected Result** must be specific and verifiable (e.g., \"Error message 'Invalid email format' is displayed below the email field\" — NOT \"Error is shown\").\n4. **Test Data** must contain actual values, not descriptions.\n5. **No free-text explanations** outside the table — only gap warnings before the table.\n6. **Priority assignment logic:**\n   - **Critical:** Blocks core functionality or causes data loss\n   - **High:** Major feature flow or AC item\n   - **Medium:** Secondary validations, formatting\n   - **Low:** UI polish, cosmetic checks\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## OUTPUT TEMPLATE\n\nIf gaps exist, state them first:\n\n> ⚠️ **Gap Identified:** [Description of missing info and recommendation]\n\nThen output the table:\n\n| Test Case ID | Jira ID | Module/Feature | Test Case Title | Preconditions | Test Steps | Test Data | Expected Result | Priority | Test Type |\n|---|---|---|---|---|---|---|---|---|---|\n| TC_LOGIN_001 | BW-123 | Login Module | Verify successful login with valid credentials | 1. User account exists and is active. 2. User is on the login page. | 1. Enter valid email in email field. 2. Enter valid password in password field. 3. Click \"Login\" button. | Email: testuser@bw.com, Password: Test@1234 | User is redirected to the dashboard. Welcome message \"Hello, Test User\" is displayed in the header. | High | Functional |\n| TC_LOGIN_002 | BW-123 | Login Module | Verify error on login with invalid password | 1. User account exists. 2. User is on the login page. | 1. Enter valid email. 2. Enter incorrect password. 3. Click \"Login\" button. | Email: testuser@bw.com, Password: WrongPass!99 | Error message \"Invalid email or password\" is displayed. Login button remains enabled. Password field is cleared. | High | Negative |\n| TC_LOGIN_003 | BW-123 | Login Module | Verify email field rejects input exceeding max character limit | 1. User is on the login page. | 1. Enter email with 256 characters in email field. 2. Observe field behavior. | Email: [256-char string]@bw.com | Input is truncated at 255 characters OR validation error \"Email must not exceed 255 characters\" is displayed. | Medium | Boundary |\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n## GUARDRAILS (Non-Negotiable)\n\n1. **Zero Hallucination Policy:** Every test case must trace to a documented requirement. If you cannot cite the source, do not include it.\n2. **No Requirement Creation:** You are a QA engineer, not a BA/PO. Do not write requirements disguised as test cases.\n3. **Ambiguity Flagging:** If an AC is ambiguous, flag it as a gap and generate a test case with a conditional expected result noting the ambiguity.\n4. **Completeness Check:** After generating, verify every documented AC has at least one test case mapped to it. List any unmapped ACs as gaps.\n5. **No Duplicate Coverage:** Each behavior should be tested exactly once. Avoid overlapping test cases.\n```\n\n---\n\n## Usage Examples\n\n**Input:**\n```\nCreate test cases for app.bw.com for Jira ID BW-456 — User Registration feature\n```\n\n**Input with PRD:**\n```\nUsing the attached PRD and Jira ticket PROJ-789, generate test cases for the Payment Gateway integration\n```\n\n**Input for specific scope:**\n```\nGenerate negative and boundary test cases only for Jira ID BW-123 — Password Reset flow\n```\n\n---\n\n## Integration Notes\n\n- **Jira CSV Import:** The table output is directly compatible with Jira's CSV import via `Test Management` plugins (Zephyr, Xray, TestRail).\n- **Agent IDEs:** This prompt works with Claude Code, Cursor, Windsurf, and any agent IDE supporting system prompts.\n- **QASkills.sh Compatible:** Can be packaged as a skill for the QASkills agent framework.\n\n\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -624,
+        -400
+      ],
+      "id": "6a6cd11a-0b0d-4390-be53-ed3060e0fbb0",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -960,
+        -176
+      ],
+      "id": "2e5d551f-e026-4e7d-a2ba-3bc9bdb0d7fd",
+      "name": "BRAIN",
+      "credentials": {
+        "groqApi": {
+          "id": "BZphVryzZr6MG1h0",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "issueKey": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Issue_Key', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.jiraTool",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        -48
+      ],
+      "id": "7a1fb0d3-d639-47ee-8f82-ea7045a2d21f",
+      "name": "READ_JIRA",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "L77nyfUEqMEoGHWq",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "documentURL": "https://docs.google.com/document/d/1GsT57ocl4HaUCxNhBGVmwvLYh7R24gjVB_RDteltkF4/edit?usp=sharing"
+      },
+      "type": "n8n-nodes-base.googleDocsTool",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        -32
+      ],
+      "id": "e1de177e-14e3-4d91-9b3a-eb56a793bfeb",
+      "name": "READ_PRD",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "ZlPtMhtHUsxU00VJ",
+          "name": "Google Docs account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1igKwOisCwfkgHVPjfnS3lTq31ysQBJkR0zMu92XOt5g/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1igKwOisCwfkgHVPjfnS3lTq31ysQBJkR0zMu92XOt5g/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Module/Feature": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Module_Feature', ``, 'string') }}",
+            "Test Case Title": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Test_Case_Title', ``, 'string') }}",
+            "Preconditions": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Preconditions', ``, 'string') }}",
+            "Test Steps": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Test_Steps', ``, 'string') }}",
+            "Test Data": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Test_Data', ``, 'string') }}",
+            "Expected Result": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Expected_Result', ``, 'string') }}",
+            "Priority": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Priority', ``, 'string') }}",
+            "Test Type": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Test_Type', ``, 'string') }}",
+            "Test Case ID  Jira ID": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Test_Case_ID__Jira_ID__using_to_match_', ``, 'string') }}"
+          },
+          "matchingColumns": [
+            "Test Case ID  Jira ID"
+          ],
+          "schema": [
+            {
+              "id": "Test Case ID  Jira ID",
+              "displayName": "Test Case ID  Jira ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Module/Feature",
+              "displayName": "Module/Feature",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Test Case Title",
+              "displayName": "Test Case Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Preconditions",
+              "displayName": "Preconditions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Test Steps",
+              "displayName": "Test Steps",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Test Data",
+              "displayName": "Test Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Expected Result",
+              "displayName": "Expected Result",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Test Type",
+              "displayName": "Test Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        -256,
+        -224
+      ],
+      "id": "b9427d76-b04d-4929-9e23-04367ef2eb4a",
+      "name": "Update to Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eIga4Zghd2TVvHmE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -640,
+        -208
+      ],
+      "id": "b5b68099-4589-4575-978d-6f1bf373e0f3",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BRAIN": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "READ_JIRA": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "READ_PRD": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update to Sheet": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "21b22375-6aba-4b15-a6b5-28cc9bc52bee",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c5b7d69aef09d65f6d843dbeb419620198dba9448e9bb3bd16f598faf54bf9f9"
+  },
+  "id": "Y6APe695G7Ssh5kv",
+  "tags": []
+}

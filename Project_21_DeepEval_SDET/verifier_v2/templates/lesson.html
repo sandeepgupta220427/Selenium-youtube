@@ -1,0 +1,465 @@
+{% extends "_base.html" %}
+{% block title %}{{ lesson.name }} — DeepEval Verifier V2{% endblock %}
+{% block styles %}
+.lesson-shell {
+  display: grid; grid-template-columns: 240px 1fr; gap: 30px;
+  max-width: 1400px; margin: 0 auto; padding: 30px 32px;
+}
+.sidebar {
+  position: sticky; top: 90px; align-self: flex-start; height: fit-content;
+}
+.sidebar h5 {
+  font-family: "Inter", sans-serif; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted);
+  margin-bottom: 10px; padding-left: 6px;
+}
+.sidebar ol { list-style: none; counter-reset: lesson; }
+.sidebar li {
+  counter-increment: lesson; margin-bottom: 2px;
+}
+.sidebar a {
+  display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+  border-radius: 8px; color: var(--muted); font-size: 13px; font-weight: 500;
+  text-decoration: none; transition: all .12s;
+}
+.sidebar a::before {
+  content: counter(lesson, decimal); width: 22px; height: 22px;
+  background: var(--paper-2); border-radius: 50%; display: grid; place-items: center;
+  font-size: 11px; font-weight: 700; color: var(--muted);
+}
+.sidebar a:hover { background: var(--paper-2); color: var(--ink); text-decoration: none; }
+.sidebar a.active {
+  background: var(--coral-glow); color: var(--coral); font-weight: 600;
+}
+.sidebar a.active::before { background: var(--coral); color: white; }
+.sidebar a.completed::after {
+  content: "✓"; margin-left: auto; color: var(--green); font-weight: 700;
+}
+
+main.lesson { min-width: 0; }
+
+.crumb {
+  font-size: 13px; color: var(--muted); margin-bottom: 12px;
+}
+.crumb a { color: var(--muted); }
+
+.title-row {
+  display: flex; align-items: flex-start; gap: 16px; margin-bottom: 8px;
+}
+.title-row .ic { font-size: 44px; line-height: 1; }
+.title-row h2 {
+  font-size: 34px; font-weight: 700; color: var(--ink); line-height: 1.15;
+}
+.title-row .cat {
+  display: inline-block; background: var(--coral-glow); color: var(--coral);
+  padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;
+  font-family: "Inter", sans-serif; text-transform: uppercase; letter-spacing: 0.6px;
+  margin-bottom: 8px;
+}
+.tagline {
+  font-size: 18px; color: var(--muted); margin-bottom: 30px; line-height: 1.5;
+  font-family: "Source Serif 4", Georgia, serif; font-style: italic;
+}
+
+.section {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 26px; margin-bottom: 22px;
+}
+.section h3 {
+  font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section h3 .num {
+  display: inline-grid; place-items: center; width: 26px; height: 26px;
+  border-radius: 50%; background: var(--coral); color: white; font-size: 13px;
+  font-weight: 700; font-family: "Inter", sans-serif;
+}
+.section p { margin-bottom: 12px; line-height: 1.7; color: var(--ink-2); }
+.section ul { margin: 8px 0 4px 22px; }
+.section li { margin-bottom: 6px; color: var(--ink-2); line-height: 1.65; }
+
+.formula-box {
+  background: var(--paper-2); border-left: 3px solid var(--coral);
+  padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 14px 0;
+  font-family: "JetBrains Mono", monospace; font-size: 13px; color: var(--ink);
+}
+.advice-box {
+  background: var(--blue-bg); border: 1px solid #dbeafe; border-radius: 10px;
+  padding: 14px 18px; margin: 12px 0; font-size: 14px; color: var(--ink-2);
+}
+.advice-box b { color: var(--blue); }
+.gotcha-box {
+  background: var(--amber-bg); border: 1px solid #fde68a; border-radius: 10px;
+  padding: 14px 18px; margin: 12px 0;
+}
+.gotcha-box b { color: var(--amber); display: block; margin-bottom: 6px; }
+.gotcha-box ul { margin-left: 18px; }
+.gotcha-box li { color: var(--ink-2); font-size: 14px; }
+
+/* Sample comparison */
+.samples-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 14px;
+}
+@media (max-width: 1100px) { .samples-grid { grid-template-columns: 1fr; } }
+.sample-card {
+  border: 1px solid var(--line); border-radius: 12px; padding: 20px;
+  background: var(--paper);
+}
+.sample-card.good { border-left: 4px solid var(--green); }
+.sample-card.bad { border-left: 4px solid var(--red); }
+.sample-card .label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+  margin-bottom: 4px; font-family: "Inter", sans-serif;
+}
+.sample-card.good .label { color: var(--green); }
+.sample-card.bad .label { color: var(--red); }
+.sample-card h4 {
+  font-size: 15px; font-weight: 600; color: var(--ink); margin-bottom: 14px;
+  font-family: "Inter", sans-serif;
+}
+.field { margin-bottom: 12px; }
+.field-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px;
+  color: var(--muted); margin-bottom: 4px;
+}
+.field-value, .field textarea, .field input {
+  width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+  padding: 10px 12px; font-size: 13px; color: var(--ink); font-family: "JetBrains Mono", monospace;
+  line-height: 1.55; resize: vertical;
+}
+.field textarea { min-height: 56px; }
+.field input { font-family: inherit; }
+.field-value { white-space: pre-wrap; word-wrap: break-word; max-height: 180px; overflow-y: auto; }
+.field textarea:focus, .field input:focus {
+  outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px var(--coral-glow);
+}
+
+.btn-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+
+.score-box {
+  margin-top: 16px; padding: 16px; border-radius: 10px;
+  background: var(--paper-2); border: 1px dashed var(--line); display: none;
+}
+.score-box.show { display: block; }
+.score-row {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 10px;
+}
+.score-badge {
+  padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 13px;
+  font-family: "Inter", sans-serif;
+}
+.score-badge.pass { background: var(--green-bg); color: var(--green); }
+.score-badge.fail { background: var(--red-bg); color: var(--red); }
+.score-bar {
+  flex: 1; height: 8px; background: var(--line); border-radius: 4px; overflow: hidden;
+}
+.score-fill { height: 100%; transition: width .8s cubic-bezier(.4,0,.2,1); border-radius: 4px; }
+.score-fill.pass { background: var(--green); }
+.score-fill.fail { background: var(--red); }
+.score-pct { font-weight: 700; color: var(--ink); min-width: 50px; text-align: right; font-family: "Inter", sans-serif; font-size: 14px; }
+.score-meta { font-size: 12px; color: var(--muted); }
+.score-reason {
+  margin-top: 10px; padding: 10px 12px; background: var(--card); border-radius: 8px;
+  font-size: 13px; color: var(--ink-2); line-height: 1.6; border-left: 3px solid var(--coral);
+}
+
+.spinner {
+  display: inline-block; width: 14px; height: 14px; border: 2px solid var(--coral-glow);
+  border-top-color: var(--coral); border-radius: 50%; animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.compare-banner {
+  margin: 20px 0; padding: 18px 22px; background: var(--paper-2);
+  border: 1px dashed var(--line); border-radius: 12px;
+  display: flex; align-items: center; gap: 16px; justify-content: space-between;
+}
+.compare-banner .text { font-size: 14px; color: var(--ink-2); }
+.compare-banner .text b { color: var(--ink); }
+
+.nav-row {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+  margin: 30px 0 0;
+}
+.nav-link {
+  flex: 1; padding: 18px 22px; background: var(--card); border: 1px solid var(--line);
+  border-radius: 12px; text-decoration: none; color: var(--ink); transition: all .15s;
+}
+.nav-link:hover { border-color: var(--coral); text-decoration: none; transform: translateY(-1px); }
+.nav-link .dir { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; }
+.nav-link .name { font-size: 16px; font-weight: 600; color: var(--ink); margin-top: 4px; }
+.nav-link.next { text-align: right; }
+.nav-link.disabled { opacity: 0.4; pointer-events: none; }
+
+.complete-cta {
+  margin-top: 18px; padding: 16px 22px; background: var(--coral-glow);
+  border-radius: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.complete-cta .text { font-size: 14px; color: var(--ink-2); }
+.complete-cta .text b { color: var(--coral); }
+{% endblock %}
+
+{% block content %}
+<div class="lesson-shell">
+
+  <aside class="sidebar">
+    <h5>All Metrics ({{ current_index + 1 }}/{{ total }})</h5>
+    <ol>
+      {% for l in lessons %}
+      <li>
+        <a href="/lesson/{{ l.id }}" class="{{ 'active' if l.id == lesson.id else '' }}" data-lesson-id="{{ l.id }}">
+          {{ l.name }}
+        </a>
+      </li>
+      {% endfor %}
+    </ol>
+  </aside>
+
+  <main class="lesson">
+    <div class="crumb"><a href="/">All metrics</a> &nbsp;›&nbsp; {{ lesson.category }} &nbsp;›&nbsp; {{ lesson.name }}</div>
+
+    <span class="cat">{{ lesson.category }}</span>
+    <div class="title-row">
+      <span class="ic">{{ lesson.icon }}</span>
+      <h2>{{ lesson.name }}</h2>
+    </div>
+    <p class="tagline">{{ lesson.tagline }}</p>
+
+    <!-- 1. Explanation -->
+    <section class="section">
+      <h3><span class="num">1</span> What this metric checks</h3>
+      {% for para in lesson.explanation.split('\n\n') %}<p>{{ para }}</p>{% endfor %}
+      <div class="formula-box"><b>How it's scored:</b> {{ lesson.formula }}</div>
+    </section>
+
+    <!-- 2. When to use -->
+    <section class="section">
+      <h3><span class="num">2</span> When to reach for it</h3>
+      <ul>{% for w in lesson.when_to_use %}<li>{{ w }}</li>{% endfor %}</ul>
+      <div class="advice-box"><b>Threshold guidance:</b> {{ lesson.threshold_advice }}</div>
+      <div class="gotcha-box"><b>⚠️ Common gotchas</b><ul>{% for g in lesson.gotchas %}<li>{{ g }}</li>{% endfor %}</ul></div>
+    </section>
+
+    <!-- 3. Live samples -->
+    <section class="section">
+      <h3><span class="num">3</span> Try it live</h3>
+      <p style="margin-bottom: 14px;">Below are two pre-built examples. Click <b>Run</b> on each to see how the metric scores them — then edit the fields and re-run to watch the score change.</p>
+
+      <div class="samples-grid">
+        <!-- GOOD -->
+        <div class="sample-card good">
+          <div class="label">✓ {{ lesson.good_sample.label }}</div>
+          <h4 id="good-hint">{{ lesson.good_sample.expected_score_hint }}</h4>
+          <div class="field">
+            <div class="field-label">Query (input)</div>
+            <input id="good-query" value="{{ lesson.good_sample.query }}" />
+          </div>
+          <div class="field">
+            <div class="field-label">Actual output</div>
+            <textarea id="good-output">{{ lesson.good_sample.actual_output }}</textarea>
+          </div>
+          {% if lesson.needs_expected %}
+          <div class="field">
+            <div class="field-label">Expected output</div>
+            <textarea id="good-expected">{{ lesson.good_sample.expected_output }}</textarea>
+          </div>
+          {% endif %}
+          {% if lesson.needs_context %}
+          <div class="field">
+            <div class="field-label">Retrieval context</div>
+            <textarea id="good-context" rows="4">{{ lesson.good_sample.retrieval_context | join('\n---\n') }}</textarea>
+          </div>
+          {% endif %}
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="runScore('good')">▶ Run on this</button>
+            <button class="btn btn-ghost" onclick="resetSample('good')">↻ Reset</button>
+          </div>
+          <div class="score-box" id="good-result"></div>
+        </div>
+
+        <!-- BAD -->
+        <div class="sample-card bad">
+          <div class="label">✗ {{ lesson.bad_sample.label }}</div>
+          <h4 id="bad-hint">{{ lesson.bad_sample.expected_score_hint }}</h4>
+          <div class="field">
+            <div class="field-label">Query (input)</div>
+            <input id="bad-query" value="{{ lesson.bad_sample.query }}" />
+          </div>
+          <div class="field">
+            <div class="field-label">Actual output</div>
+            <textarea id="bad-output">{{ lesson.bad_sample.actual_output }}</textarea>
+          </div>
+          {% if lesson.needs_expected %}
+          <div class="field">
+            <div class="field-label">Expected output</div>
+            <textarea id="bad-expected">{{ lesson.bad_sample.expected_output }}</textarea>
+          </div>
+          {% endif %}
+          {% if lesson.needs_context %}
+          <div class="field">
+            <div class="field-label">Retrieval context</div>
+            <textarea id="bad-context" rows="4">{{ lesson.bad_sample.retrieval_context | join('\n---\n') }}</textarea>
+          </div>
+          {% endif %}
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="runScore('bad')">▶ Run on this</button>
+            <button class="btn btn-ghost" onclick="resetSample('bad')">↻ Reset</button>
+          </div>
+          <div class="score-box" id="bad-result"></div>
+        </div>
+      </div>
+
+      <div class="compare-banner">
+        <div class="text">
+          <b>🔬 Compare both at once:</b> runs the metric on the good and bad samples in parallel.
+        </div>
+        <button class="btn btn-secondary" onclick="runBoth()">⚡ Run side-by-side</button>
+      </div>
+    </section>
+
+    <div class="complete-cta">
+      <div class="text"><b>Done with this metric?</b> Mark it complete to track your progress.</div>
+      <button class="btn btn-primary" onclick="completeLesson()">✓ Mark explored</button>
+    </div>
+
+    <div class="nav-row">
+      {% if prev_lesson %}
+      <a class="nav-link" href="/lesson/{{ prev_lesson.id }}">
+        <div class="dir">← Previous</div>
+        <div class="name">{{ prev_lesson.icon }} {{ prev_lesson.name }}</div>
+      </a>
+      {% else %}<a class="nav-link disabled"><div class="dir">← Previous</div><div class="name">—</div></a>{% endif %}
+      {% if next_lesson %}
+      <a class="nav-link next" href="/lesson/{{ next_lesson.id }}">
+        <div class="dir">Next →</div>
+        <div class="name">{{ next_lesson.name }} {{ next_lesson.icon }}</div>
+      </a>
+      {% else %}<a class="nav-link next disabled"><div class="dir">Next →</div><div class="name">—</div></a>{% endif %}
+    </div>
+
+  </main>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const METRIC_ID = "{{ lesson.id }}";
+const LESSON_ID = "{{ lesson.id }}";
+const NEEDS_CONTEXT = {{ 'true' if lesson.needs_context else 'false' }};
+const NEEDS_EXPECTED = {{ 'true' if lesson.needs_expected else 'false' }};
+const INVERSE_METRICS = ["hallucination", "bias", "toxicity"];
+const ORIGINAL = {
+  good: {
+    query: {{ lesson.good_sample.query | tojson }},
+    actual_output: {{ lesson.good_sample.actual_output | tojson }},
+    expected_output: {{ (lesson.good_sample.expected_output if lesson.good_sample.expected_output is defined else '') | tojson }},
+    retrieval_context: {{ (lesson.good_sample.retrieval_context if lesson.good_sample.retrieval_context is defined else []) | tojson }},
+  },
+  bad: {
+    query: {{ lesson.bad_sample.query | tojson }},
+    actual_output: {{ lesson.bad_sample.actual_output | tojson }},
+    expected_output: {{ (lesson.bad_sample.expected_output if lesson.bad_sample.expected_output is defined else '') | tojson }},
+    retrieval_context: {{ (lesson.bad_sample.retrieval_context if lesson.bad_sample.retrieval_context is defined else []) | tojson }},
+  },
+};
+
+function gather(side) {
+  const payload = {
+    metric: METRIC_ID,
+    query: document.getElementById(side + '-query').value,
+    actual_output: document.getElementById(side + '-output').value,
+    threshold: INVERSE_METRICS.includes(METRIC_ID) ? 0.3 : 0.7,
+    model: "gpt-4o-mini",
+  };
+  if (NEEDS_EXPECTED) {
+    const el = document.getElementById(side + '-expected');
+    if (el) payload.expected_output = el.value;
+  }
+  if (NEEDS_CONTEXT) {
+    const el = document.getElementById(side + '-context');
+    if (el) payload.retrieval_context = el.value.split('\n---\n').map(s => s.trim()).filter(Boolean);
+  }
+  return payload;
+}
+
+async function runScore(side) {
+  const box = document.getElementById(side + '-result');
+  box.classList.add('show');
+  box.innerHTML = '<div class="score-meta"><span class="spinner"></span> &nbsp;Scoring with GPT-4o-mini…</div>';
+  try {
+    const res = await fetch('/api/score', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(gather(side)),
+    });
+    const data = await res.json();
+    renderScore(side, data);
+  } catch (e) {
+    box.innerHTML = '<div style="color: var(--red);">Error: ' + e.message + '</div>';
+  }
+}
+
+function renderScore(side, data) {
+  const box = document.getElementById(side + '-result');
+  if (!data.success) {
+    box.innerHTML = '<div style="color: var(--red);">⚠ ' + (data.error || 'Failed') + '</div>';
+    return;
+  }
+  const score = data.score == null ? 0 : data.score;
+  const pct = (score * 100).toFixed(1);
+  const cls = data.passed ? 'pass' : 'fail';
+  const verdict = data.passed ? '✓ PASSED' : '✗ FAILED';
+  const inverseNote = data.inverse ? ' <span style="color: var(--muted); font-weight: 500;">(lower = better)</span>' : '';
+  box.innerHTML = `
+    <div class="score-row">
+      <span class="score-badge ${cls}">${verdict}</span>
+      <div class="score-bar"><div class="score-fill ${cls}" style="width: 0%"></div></div>
+      <span class="score-pct">${pct}%</span>
+    </div>
+    <div class="score-meta">Score: <b>${score.toFixed(3)}</b> · Threshold: ${data.threshold}${inverseNote} · ${data.elapsed_seconds}s · Judge: GPT-4o-mini</div>
+    ${data.reason ? `<div class="score-reason"><b>Why:</b> ${escapeHtml(data.reason)}</div>` : ''}
+  `;
+  // animate the bar after a tick
+  requestAnimationFrame(() => {
+    const fill = box.querySelector('.score-fill');
+    if (fill) fill.style.width = pct + '%';
+  });
+}
+
+async function runBoth() {
+  await Promise.all([runScore('good'), runScore('bad')]);
+}
+
+function resetSample(side) {
+  const o = ORIGINAL[side];
+  document.getElementById(side + '-query').value = o.query;
+  document.getElementById(side + '-output').value = o.actual_output;
+  if (NEEDS_EXPECTED) {
+    const el = document.getElementById(side + '-expected');
+    if (el) el.value = o.expected_output;
+  }
+  if (NEEDS_CONTEXT) {
+    const el = document.getElementById(side + '-context');
+    if (el) el.value = o.retrieval_context.join('\n---\n');
+  }
+  document.getElementById(side + '-result').classList.remove('show');
+}
+
+function completeLesson() {
+  markComplete(LESSON_ID);
+  const btn = event.target;
+  btn.textContent = '✓ Marked explored';
+  btn.disabled = true;
+}
+
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+// Mark already-completed lessons in sidebar
+document.addEventListener('DOMContentLoaded', () => {
+  const done = getProgress();
+  document.querySelectorAll('.sidebar a[data-lesson-id]').forEach(a => {
+    if (done.includes(a.dataset.lessonId)) a.classList.add('completed');
+  });
+});
+</script>
+{% endblock %}

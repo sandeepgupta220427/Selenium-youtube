@@ -1,0 +1,112 @@
+{% extends "_base.html" %}
+{% block title %}All Metrics — DeepEval Verifier V2{% endblock %}
+{% block styles %}
+.hero {
+  max-width: 760px; margin: 30px auto 50px; text-align: center;
+}
+.hero h2 {
+  font-size: 36px; font-weight: 700; line-height: 1.15; margin-bottom: 14px; color: var(--ink);
+}
+.hero h2 em { color: var(--coral); font-style: normal; }
+.hero p {
+  font-size: 16px; color: var(--muted); line-height: 1.65;
+}
+.hero .meta {
+  display: inline-flex; align-items: center; gap: 18px; margin-top: 22px;
+  padding: 12px 24px; background: var(--paper-2); border: 1px solid var(--line);
+  border-radius: 999px; font-size: 13px; color: var(--muted);
+}
+.hero .meta b { color: var(--ink); font-weight: 600; }
+
+.category {
+  margin-bottom: 50px;
+}
+.category-header {
+  display: flex; align-items: baseline; gap: 12px; margin-bottom: 18px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--line);
+}
+.category-header h3 {
+  font-size: 22px; font-weight: 700; color: var(--ink);
+}
+.category-header .count {
+  font-size: 13px; color: var(--muted); font-family: "Inter", sans-serif;
+}
+
+.lesson-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 18px;
+}
+.lesson-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+  padding: 22px; text-decoration: none; color: inherit; display: block;
+  transition: all .18s ease; position: relative;
+}
+.lesson-card:hover {
+  border-color: var(--coral); transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(31,30,29,0.06); text-decoration: none;
+}
+.lesson-card.completed::after {
+  content: "✓ Explored"; position: absolute; top: 14px; right: 14px;
+  background: var(--green-bg); color: var(--green); font-size: 11px;
+  font-weight: 700; padding: 3px 10px; border-radius: 999px;
+}
+.lesson-card .icon { font-size: 28px; margin-bottom: 10px; display: block; }
+.lesson-card h4 {
+  font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 6px;
+}
+.lesson-card .tagline {
+  font-size: 13px; color: var(--muted); line-height: 1.55; margin-bottom: 14px;
+}
+.lesson-card .tags {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.lesson-card .tag {
+  background: var(--paper-2); color: var(--ink-2); font-size: 11px;
+  padding: 3px 9px; border-radius: 999px; font-weight: 500;
+}
+.lesson-card .tag.ctx { background: var(--blue-bg); color: var(--blue); }
+.lesson-card .tag.exp { background: var(--amber-bg); color: var(--amber); }
+{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <div class="hero">
+    <h2>Learn DeepEval, <em>one metric at a time</em></h2>
+    <p>
+      Each metric below is a self-contained lesson: how it works, when to use it, and a
+      good/bad sample pair you can run live. Edit the inputs to see how scores change in real time.
+    </p>
+    <div class="meta">
+      <span><b>{{ total }}</b> metrics</span>
+      <span>·</span>
+      <span><b>{{ lessons_by_category|length }}</b> categories</span>
+      <span>·</span>
+      <span>Live scoring against GPT-4o-mini</span>
+    </div>
+  </div>
+
+  {% for category, lessons in lessons_by_category.items() %}
+  <section class="category">
+    <div class="category-header">
+      <h3>{{ category }}</h3>
+      <span class="count">{{ lessons|length }} metric{{ 's' if lessons|length > 1 else '' }}</span>
+    </div>
+    <div class="lesson-grid">
+      {% for lesson in lessons %}
+      <a class="lesson-card" data-lesson-id="{{ lesson.id }}" href="/lesson/{{ lesson.id }}">
+        <span class="icon">{{ lesson.icon }}</span>
+        <h4>{{ lesson.name }}</h4>
+        <div class="tagline">{{ lesson.tagline }}</div>
+        <div class="tags">
+          {% if lesson.needs_context %}<span class="tag ctx">needs context</span>{% endif %}
+          {% if lesson.needs_expected %}<span class="tag exp">needs expected output</span>{% endif %}
+          {% if not lesson.needs_context and not lesson.needs_expected %}<span class="tag">just input + output</span>{% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+
+</div>
+{% endblock %}

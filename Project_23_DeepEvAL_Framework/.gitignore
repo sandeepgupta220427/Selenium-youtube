@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+node_modules/
+01_chatbot/frontend/dist/
+02_rag_explorer/chroma_db/
+02_rag_explorer/data/uploads/
+03_deepeval_framework/reports/*.html
+03_deepeval_framework/reports/*.json
+.env
+*.log

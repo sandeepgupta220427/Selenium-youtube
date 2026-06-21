@@ -1,0 +1,1251 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Tester Blueprint | RAG Track Docs</title>
+  <meta name="description" content="Mintlify-style documentation page for AI Tester Blueprint Projects 12 to 15: RAG Basics, RAG with LangFlow, RAG VIBE Coding, and the Vector Embeddings Visualizer.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%237c3aed'/%3E%3Cpath d='M18 20h28v8H18zm0 16h20v8H18z' fill='white'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono: 'JetBrains Mono', SFMono-Regular, Consolas, monospace;
+      --nav-h: 60px;
+      --sidebar-w: 286px;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow: 0 14px 36px rgba(15, 23, 42, 0.08);
+      --transition: 0.18s ease;
+    }
+
+    :root,
+    html[data-theme="light"] {
+      --bg: #ffffff;
+      --bg-soft: #f8fafc;
+      --bg-muted: #f1f5f9;
+      --panel: #ffffff;
+      --panel-2: #f8fafc;
+      --line: #e2e8f0;
+      --line-2: #cbd5e1;
+      --text: #0f172a;
+      --text-2: #334155;
+      --text-3: #64748b;
+      --accent: #7c3aed;
+      --accent-2: #a855f7;
+      --accent-soft: #f3e8ff;
+      --accent-border: #e9d5ff;
+      --accent-text: #6d28d9;
+      --success: #047857;
+      --success-bg: #ecfdf5;
+      --warning-bg: #fff7ed;
+      --warning-text: #c2410c;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+      color-scheme: light;
+    }
+
+    html[data-theme="dark"] {
+      --bg: #020617;
+      --bg-soft: #0f172a;
+      --bg-muted: #111827;
+      --panel: #0f172a;
+      --panel-2: #111827;
+      --line: #1e293b;
+      --line-2: #334155;
+      --text: #f8fafc;
+      --text-2: #cbd5e1;
+      --text-3: #94a3b8;
+      --accent: #c084fc;
+      --accent-2: #e879f9;
+      --accent-soft: rgba(192, 132, 252, 0.12);
+      --accent-border: rgba(216, 180, 254, 0.22);
+      --accent-text: #e9d5ff;
+      --success: #34d399;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --warning-bg: rgba(249, 115, 22, 0.12);
+      --warning-text: #fdba74;
+      --code-bg: #020617;
+      --code-text: #dbeafe;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; }
+    button, input { font: inherit; }
+    code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--bg-muted);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 2px 6px;
+      color: var(--accent-text);
+    }
+    pre {
+      margin: 0;
+      padding: 18px;
+      overflow-x: auto;
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: var(--radius);
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 0 18px;
+      background: rgba(255,255,255,0.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    html[data-theme="dark"] .topbar {
+      background: rgba(2,6,23,0.92);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      box-shadow: 0 10px 28px rgba(124, 58, 237, 0.24);
+      flex-shrink: 0;
+    }
+
+    .brand-copy strong {
+      display: block;
+      font-size: 14px;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-copy span {
+      display: block;
+      font-size: 12px;
+      color: var(--text-3);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .top-link,
+    .theme-toggle,
+    .menu-toggle {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text-2);
+      border-radius: 999px;
+      padding: 9px 14px;
+      cursor: pointer;
+      transition: border-color var(--transition), color var(--transition), background var(--transition), transform var(--transition);
+    }
+
+    .top-link:hover,
+    .theme-toggle:hover,
+    .menu-toggle:hover {
+      border-color: var(--line-2);
+      color: var(--text);
+      transform: translateY(-1px);
+    }
+
+    .menu-toggle { display: none; }
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
+      padding-top: var(--nav-h);
+    }
+
+    .sidebar {
+      position: fixed;
+      top: var(--nav-h);
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--panel);
+      border-right: 1px solid var(--line);
+      overflow-y: auto;
+      padding: 16px 12px 28px;
+    }
+
+    .sidebar-search {
+      position: sticky;
+      top: 0;
+      background: var(--panel);
+      padding-bottom: 10px;
+      z-index: 2;
+    }
+
+    .search-box {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 11px 12px;
+      outline: none;
+    }
+
+    .search-box:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.12);
+    }
+
+    .sidebar-group {
+      margin-top: 16px;
+    }
+
+    .sidebar-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      padding: 8px 10px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 10px;
+      color: var(--text-2);
+      font-size: 14px;
+      margin: 2px 0;
+      transition: background var(--transition), color var(--transition), border-color var(--transition);
+      border: 1px solid transparent;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      background: var(--accent-soft);
+      color: var(--accent-text);
+      border-color: var(--accent-border);
+    }
+
+    .nav-pill {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--bg-muted);
+      color: var(--text-3);
+      border: 1px solid var(--line);
+    }
+
+    .main {
+      margin-left: var(--sidebar-w);
+      width: calc(100% - var(--sidebar-w));
+      padding: 30px 34px 60px;
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 6px 0 30px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-text);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 30px;
+      letter-spacing: -0.04em;
+    }
+
+    h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      margin: 0;
+      color: var(--text-2);
+      font-size: 16px;
+    }
+
+    .hero-copy {
+      max-width: 820px;
+    }
+
+    .hero-actions,
+    .badge-row,
+    .quick-grid,
+    .metrics,
+    .grid-2,
+    .grid-3,
+    .card-list,
+    .flow-grid,
+    .file-grid,
+    .provider-grid,
+    .architecture-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .hero-actions {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 22px;
+    }
+
+    .metrics {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-top: 24px;
+    }
+
+    .quick-grid,
+    .grid-2,
+    .file-grid,
+    .architecture-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3,
+    .provider-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .flow-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card,
+    .metric,
+    .flow-step,
+    .file-card,
+    .callout {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .card,
+    .metric,
+    .file-card,
+    .callout { padding: 18px; }
+
+    .metric strong {
+      display: block;
+      font-size: 30px;
+      margin-bottom: 6px;
+      letter-spacing: -0.04em;
+    }
+
+    .metric span {
+      color: var(--text-3);
+      font-size: 14px;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--accent-border);
+      background: var(--accent-soft);
+      color: var(--accent-text);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .section {
+      padding: 42px 0;
+      border-bottom: 1px solid var(--line);
+      scroll-margin-top: calc(var(--nav-h) + 18px);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-text);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+    }
+
+    .section-desc {
+      max-width: 760px;
+    }
+
+    .project-chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      color: var(--text-3);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--text-2);
+    }
+
+    .list li + li { margin-top: 8px; }
+
+    .callout {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+    }
+
+    .callout.success {
+      border-color: rgba(4, 120, 87, 0.16);
+      background: linear-gradient(180deg, var(--success-bg), var(--panel));
+    }
+
+    .callout.warning {
+      border-color: rgba(194, 65, 12, 0.14);
+      background: linear-gradient(180deg, var(--warning-bg), var(--panel));
+    }
+
+    .callout h3,
+    .file-card h3 { margin-bottom: 8px; }
+
+    .callout p,
+    .file-card p { font-size: 15px; }
+
+    .flow-step {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      min-height: 124px;
+    }
+
+    .flow-step strong {
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      color: var(--accent-text);
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .file-card {
+      display: block;
+      transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+
+    .file-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-border);
+      box-shadow: 0 18px 36px rgba(124, 58, 237, 0.12);
+    }
+
+    .file-card small {
+      display: block;
+      margin-top: 10px;
+      color: var(--text-3);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      word-break: break-all;
+    }
+
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 14px 30px rgba(124, 58, 237, 0.22);
+    }
+
+    .link-button.secondary {
+      background: var(--panel);
+      color: var(--text);
+      border: 1px solid var(--line);
+      box-shadow: none;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .footer {
+      padding: 32px 0 10px;
+      color: var(--text-3);
+      font-size: 14px;
+    }
+
+    .inline-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .inline-links a {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--bg-soft);
+      color: var(--text-2);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .inline-links a:hover {
+      border-color: var(--accent-border);
+      color: var(--accent-text);
+      background: var(--accent-soft);
+    }
+
+    .hide { display: none !important; }
+
+    @media (max-width: 1120px) {
+      .metrics,
+      .hero-actions,
+      .grid-3,
+      .provider-grid,
+      .flow-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 920px) {
+      .menu-toggle { display: inline-flex; }
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform var(--transition);
+        box-shadow: 0 20px 60px rgba(2, 6, 23, 0.18);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 26px 20px 56px;
+      }
+      .top-link.hide-mobile { display: none; }
+    }
+
+    @media (max-width: 720px) {
+      .hero-actions,
+      .metrics,
+      .quick-grid,
+      .grid-2,
+      .grid-3,
+      .file-grid,
+      .provider-grid,
+      .flow-grid,
+      .architecture-grid { grid-template-columns: 1fr; }
+      .topbar {
+        padding: 0 12px;
+      }
+      .brand-copy span { display: none; }
+      h1 { font-size: 38px; }
+      h2 { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">Menu</button>
+      <div class="brand-mark">AI</div>
+      <div class="brand-copy">
+        <strong>AI Tester Blueprint</strong>
+        <span>RAG Track Documentation | Projects 12 to 15</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a class="top-link hide-mobile" href="./index.html">Open Main PPT</a>
+      <a class="top-link hide-mobile" href="../README.md">Repo README</a>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">Theme</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-search">
+        <input id="navSearch" class="search-box" type="text" placeholder="Filter sections..." aria-label="Filter sections">
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-label">Track</div>
+        <a class="nav-link" href="#overview"><span>Overview</span><span class="nav-pill">4</span></a>
+        <a class="nav-link" href="#teaching-order"><span>Teaching Order</span><span class="nav-pill">Plan</span></a>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-label">Project 12</div>
+        <a class="nav-link" href="#project-12"><span>RAG Basics</span><span class="nav-pill">Theory</span></a>
+        <a class="nav-link" href="#project-12-types"><span>10 RAG Types</span></a>
+        <a class="nav-link" href="#project-12-eval"><span>Evaluation</span></a>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-label">Project 13</div>
+        <a class="nav-link" href="#project-13"><span>LangFlow RAG</span><span class="nav-pill">Visual</span></a>
+        <a class="nav-link" href="#project-13-flows"><span>Key Flows</span></a>
+        <a class="nav-link" href="#project-13-import"><span>Import Guide</span></a>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-label">Project 14</div>
+        <a class="nav-link" href="#project-14"><span>RAG App</span><span class="nav-pill">Code</span></a>
+        <a class="nav-link" href="#project-14-architecture"><span>Architecture</span></a>
+        <a class="nav-link" href="#project-14-files"><span>Key Files</span></a>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-label">Project 15</div>
+        <a class="nav-link" href="#project-15"><span>Embeddings Visualizer</span><span class="nav-pill">Demo</span></a>
+        <a class="nav-link" href="#project-15-providers"><span>Providers</span></a>
+        <a class="nav-link" href="#project-15-classroom"><span>Classroom Use</span></a>
+      </div>
+
+      <div class="sidebar-group">
+        <div class="sidebar-label">Direct Links</div>
+        <a class="nav-link" href="../Project_12_RAG_Basics/"><span>Open Project 12</span></a>
+        <a class="nav-link" href="../Project_13_RAG_with_LangFlow/"><span>Open Project 13</span></a>
+        <a class="nav-link" href="../Project_14_RAG_VIBE_CODING/"><span>Open Project 14</span></a>
+        <a class="nav-link" href="../Project_15_Vector_Embeddings_Visualizer/"><span>Open Project 15</span></a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="container">
+        <section class="hero" id="overview">
+          <span class="eyebrow">Mintlify-Style Course Page</span>
+          <h1>RAG Track: from theory to visual flows to working applications</h1>
+          <p class="hero-copy">This page is the hosted documentation view for the advanced retrieval track in AI Tester Blueprint. It covers Projects 12 to 15 in one place: the theory layer, the LangFlow implementation layer, the full application layer, and the embeddings visualizer used to teach chunking and vector search clearly.</p>
+
+          <div class="hero-actions">
+            <a class="card" href="#project-12">
+              <h3>Project 12</h3>
+              <p>RAG Basics: concepts, architectures, prerequisites, and evaluation.</p>
+            </a>
+            <a class="card" href="#project-13">
+              <h3>Project 13</h3>
+              <p>RAG with LangFlow: importable flows and visual pipeline tutorials.</p>
+            </a>
+            <a class="card" href="#project-14">
+              <h3>Project 14</h3>
+              <p>RAG VIBE Coding: a working modular RAG app with routing and ingestion.</p>
+            </a>
+          </div>
+
+          <div class="metrics">
+            <div class="metric"><strong>4</strong><span>projects in the RAG track</span></div>
+            <div class="metric"><strong>10</strong><span>RAG patterns covered in the theory layer</span></div>
+            <div class="metric"><strong>LangFlow + FastAPI</strong><span>visual and code-first delivery formats</span></div>
+            <div class="metric"><strong>Hosted HTML</strong><span>single-page docs for workshops and classroom demos</span></div>
+          </div>
+
+          <div class="inline-links">
+            <a href="https://www.mintlify.com/docs/guides/support-center" target="_blank" rel="noreferrer">Mintlify Reference</a>
+            <a href="../Project_12_RAG_Basics/README.md">Project 12 README</a>
+            <a href="../Project_13_RAG_with_LangFlow/README.md">Project 13 README</a>
+            <a href="../Project_15_Vector_Embeddings_Visualizer/README.md">Project 15 README</a>
+          </div>
+        </section>
+
+        <section class="section" id="teaching-order">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Recommended sequence</div>
+              <h2>How to teach these four projects without losing students</h2>
+              <p class="section-desc">The mistake is to jump directly into app code or LangFlow JSONs. The cleaner path is: first explain retrieval, then show the visual implementation, then show the app architecture, and finally use the embeddings visualizer whenever chunking and similarity need to become concrete.</p>
+            </div>
+            <div class="project-chip">Projects 12 → 13 → 14 + 15 as explainer</div>
+          </div>
+
+          <div class="flow-grid">
+            <div class="flow-step"><div class="step-num">1</div><strong>Project 12</strong><span>Teach what RAG is, what retrieval fixes, and which architecture fits which QA problem.</span></div>
+            <div class="flow-step"><div class="step-num">2</div><strong>Project 13</strong><span>Show the same ideas as visual flows so students can inspect each node and prompt.</span></div>
+            <div class="flow-step"><div class="step-num">3</div><strong>Project 14</strong><span>Show how the theory becomes a runnable product with upload, routing, vector storage, and chat.</span></div>
+            <div class="flow-step"><div class="step-num">4</div><strong>Project 15</strong><span>Use as a teaching aid when students do not yet understand chunk overlap, embeddings, or similarity.</span></div>
+          </div>
+        </section>
+
+        <section class="section" id="project-12">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 12</div>
+              <h2>RAG Basics</h2>
+              <p class="section-desc">Project 12 is the theory and reference layer. It explains the full retrieval pipeline and covers the major RAG architecture families before students touch LangFlow or app code.</p>
+            </div>
+            <div class="project-chip">Folder: Project_12_RAG_Basics</div>
+          </div>
+
+          <div class="two-col">
+            <div class="grid-2">
+              <div class="callout success">
+                <h3>What students get here</h3>
+                <ul class="list">
+                  <li>Clear definition of RAG and why it matters for QA teams with private data.</li>
+                  <li>A breakdown of all 10 major RAG architecture patterns used later in the course.</li>
+                  <li>Evaluation guidance so students can test retrieval quality instead of trusting answers blindly.</li>
+                </ul>
+              </div>
+              <div class="callout warning">
+                <h3>What this project is not</h3>
+                <ul class="list">
+                  <li>It is not the visual builder layer.</li>
+                  <li>It is not the production application layer.</li>
+                  <li>It should be taught before LangFlow import workflows.</li>
+                </ul>
+              </div>
+              <a class="file-card" href="../Project_12_RAG_Basics/README.md">
+                <h3>Main README</h3>
+                <p>The project map covering introduction, 10 RAG types, and evaluation.</p>
+                <small>../Project_12_RAG_Basics/README.md</small>
+              </a>
+              <a class="file-card" href="../Project_12_RAG_Basics/01_Introduction_to_RAG.md">
+                <h3>Introduction to RAG</h3>
+                <p>Use this as the first classroom reading before showing any flow or code.</p>
+                <small>../Project_12_RAG_Basics/01_Introduction_to_RAG.md</small>
+              </a>
+            </div>
+            <div class="callout">
+              <h3>Teaching objective</h3>
+              <p>Students should leave Project 12 able to answer three questions: what retrieval adds to prompting, why chunking and embeddings exist, and how different RAG patterns solve different failure modes.</p>
+              <div class="tag-row">
+                <span class="tag">Theory-first</span>
+                <span class="tag">QA-friendly</span>
+                <span class="tag">Evaluation included</span>
+              </div>
+              <a class="link-button" href="../Project_12_RAG_Basics/">Open Project 12 Folder</a>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="project-12-types">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 12 map</div>
+              <h2>The 10 RAG patterns covered in the theory track</h2>
+              <p class="section-desc">This is the core classification students should remember. Do not treat RAG as one thing. The value of this project is that it separates retrieval approaches by behavior and use case.</p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card"><h3>Naive RAG</h3><p>The simplest retrieve-then-generate pattern. Good as the baseline.</p></div>
+            <div class="card"><h3>Advanced RAG</h3><p>Adds query rewriting, chunking strategy, and reranking for better retrieval quality.</p></div>
+            <div class="card"><h3>Modular RAG</h3><p>Breaks retrieval into replaceable components and domain-specific branches.</p></div>
+            <div class="card"><h3>Graph RAG</h3><p>Uses entities and relationships for multi-hop reasoning and system dependency questions.</p></div>
+            <div class="card"><h3>Agentic RAG</h3><p>Uses tools and decision-making to choose actions dynamically.</p></div>
+            <div class="card"><h3>Self-RAG</h3><p>Adds self-reflection and quality checks before or after retrieval.</p></div>
+            <div class="card"><h3>Corrective RAG</h3><p>Evaluates retrieval quality and falls back to other sources when context is weak.</p></div>
+            <div class="card"><h3>Hybrid RAG</h3><p>Combines vector retrieval with lexical search such as BM25.</p></div>
+            <div class="card"><h3>Multi-Modal RAG</h3><p>Handles images, tables, charts, and other non-plain-text sources.</p></div>
+            <div class="card"><h3>Contextual RAG</h3><p>Adds chunk-level metadata and richer context to improve retrieval relevance.</p></div>
+          </div>
+        </section>
+
+        <section class="section" id="project-12-eval">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 12 testing</div>
+              <h2>Evaluation is part of the curriculum, not an afterthought</h2>
+              <p class="section-desc">A useful RAG course must teach how to test the system. Project 12 explicitly includes RAG evaluation so students learn to check retrieval quality, answer groundedness, and failure behavior.</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="callout success">
+              <h3>What to measure</h3>
+              <ul class="list">
+                <li>Did the retriever fetch the right chunks?</li>
+                <li>Did the answer stay grounded in retrieved context?</li>
+                <li>Did the system avoid inventing unsupported facts?</li>
+                <li>Did the chosen pattern match the QA use case?</li>
+              </ul>
+            </div>
+            <a class="file-card" href="../Project_12_RAG_Basics/12_RAG_Evaluation/README.md">
+              <h3>RAG Evaluation chapter</h3>
+              <p>Use this chapter when students ask how to benchmark or validate a RAG pipeline properly.</p>
+              <small>../Project_12_RAG_Basics/12_RAG_Evaluation/README.md</small>
+            </a>
+          </div>
+        </section>
+
+        <section class="section" id="project-13">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 13</div>
+              <h2>RAG with LangFlow</h2>
+              <p class="section-desc">Project 13 is the visual implementation layer. It translates the theory from Project 12 into importable LangFlow pipelines so students can inspect nodes, prompts, retrievers, and outputs directly on the canvas.</p>
+            </div>
+            <div class="project-chip">Folder: Project_13_RAG_with_LangFlow</div>
+          </div>
+
+          <div class="grid-2">
+            <div class="callout">
+              <h3>Why this layer matters</h3>
+              <p>LangFlow makes the retrieval pipeline inspectable. Instead of hiding retrieval inside code, students can see where documents enter, where embeddings happen, where reranking happens, and how final prompting is wired.</p>
+              <div class="tag-row">
+                <span class="tag">Importable JSONs</span>
+                <span class="tag">Low-code</span>
+                <span class="tag">Debuggable</span>
+              </div>
+            </div>
+            <a class="file-card" href="../Project_13_RAG_with_LangFlow/README.md">
+              <h3>Main README</h3>
+              <p>Primary index for the LangFlow RAG chapters and prerequisites.</p>
+              <small>../Project_13_RAG_with_LangFlow/README.md</small>
+            </a>
+          </div>
+        </section>
+
+        <section class="section" id="project-13-flows">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 13 key flows</div>
+              <h2>Flows worth demonstrating live</h2>
+              <p class="section-desc">Do not try to teach every JSON in one session. These four flows provide the cleanest storyline: baseline retrieval, improved retrieval, routed retrieval, and relationship-aware retrieval.</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <a class="file-card" href="../Project_13_RAG_with_LangFlow/02_Naive_RAG_Flow/naive_rag_langflow.json">
+              <h3>Naive RAG</h3>
+              <p>Use first. It is the baseline retrieve → prompt → generate flow.</p>
+              <small>../Project_13_RAG_with_LangFlow/02_Naive_RAG_Flow/naive_rag_langflow.json</small>
+            </a>
+            <a class="file-card" href="../Project_13_RAG_with_LangFlow/03_Advanced_RAG_Flow/advanced_rag_langflow_v6_fixed.json">
+              <h3>Advanced RAG</h3>
+              <p>Use next. It introduces semantic improvements and keeps Cohere rerank in the advanced topology.</p>
+              <small>../Project_13_RAG_with_LangFlow/03_Advanced_RAG_Flow/advanced_rag_langflow_v6_fixed.json</small>
+            </a>
+            <a class="file-card" href="../Project_13_RAG_with_LangFlow/04_Modular_RAG_Flow/modular_rag_langflow.json">
+              <h3>Modular RAG</h3>
+              <p>Shows routing across API, UI, and performance branches with a shared generation path.</p>
+              <small>../Project_13_RAG_with_LangFlow/04_Modular_RAG_Flow/modular_rag_langflow.json</small>
+            </a>
+            <a class="file-card" href="../Project_13_RAG_with_LangFlow/05_Graph_RAG_Flow/graph_rag_langflow.json">
+              <h3>Graph RAG</h3>
+              <p>Shows graph-style context extraction and relationship-aware answering inside LangFlow.</p>
+              <small>../Project_13_RAG_with_LangFlow/05_Graph_RAG_Flow/graph_rag_langflow.json</small>
+            </a>
+          </div>
+
+          <div class="grid-2" style="margin-top:16px;">
+            <a class="file-card" href="../Project_13_RAG_with_LangFlow/04_Modular_RAG_Flow/README.md">
+              <h3>Modular RAG tutorial</h3>
+              <p>Explains router-driven domain branching and context merge behavior.</p>
+              <small>../Project_13_RAG_with_LangFlow/04_Modular_RAG_Flow/README.md</small>
+            </a>
+            <a class="file-card" href="../Project_13_RAG_with_LangFlow/05_Graph_RAG_Flow/README.md">
+              <h3>Graph RAG tutorial</h3>
+              <p>Step-by-step Graph RAG explanation built for the installed LangFlow stack.</p>
+              <small>../Project_13_RAG_with_LangFlow/05_Graph_RAG_Flow/README.md</small>
+            </a>
+          </div>
+        </section>
+
+        <section class="section" id="project-13-import">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 13 operations</div>
+              <h2>How to import and run the LangFlow material</h2>
+              <p class="section-desc">This should be part of the workshop script. Students usually understand the flow visually but fail on setup. This section keeps the operational path explicit.</p>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="callout success">
+              <h3>Import workflow</h3>
+              <ol class="list">
+                <li>Run LangFlow locally with <code>langflow run</code>.</li>
+                <li>Open the app at <code>http://localhost:7860</code>.</li>
+                <li>Use <code>New Flow → Import</code> and choose the JSON.</li>
+                <li>Configure provider keys such as OpenAI, Groq, or Cohere.</li>
+                <li>Test the flow in the playground before teaching from it live.</li>
+              </ol>
+            </div>
+            <a class="file-card" href="../Project_13_RAG_with_LangFlow/12_Learning_Path.md">
+              <h3>Learning path</h3>
+              <p>Use this page to keep students in the correct order across Project 11, 12, and 13.</p>
+              <small>../Project_13_RAG_with_LangFlow/12_Learning_Path.md</small>
+            </a>
+          </div>
+        </section>
+
+        <section class="section" id="project-14">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 14</div>
+              <h2>RAG with VIBE Coding</h2>
+              <p class="section-desc">Project 14 is the application layer. It is a modular RAG system with upload, ingestion, domain routing, vector retrieval, and a simple UI. There is no root README today, so this documentation section is derived from the actual code paths.</p>
+            </div>
+            <div class="project-chip">Folder: Project_14_RAG_VIBE_CODING</div>
+          </div>
+
+          <div class="two-col">
+            <div class="callout">
+              <h3>What this app demonstrates</h3>
+              <ul class="list">
+                <li>Document upload into domain-specific Chroma collections.</li>
+                <li>LLM-based query routing across API, UI, and performance contexts.</li>
+                <li>Prompted retrieval and final answer generation over local vector data.</li>
+                <li>A classroom-friendly frontend that exposes ingestion and chat together.</li>
+              </ul>
+            </div>
+            <pre>POST /api/upload
+  - file: UploadFile
+  - domain: api | ui | perf
+
+POST /api/chat
+  - body: { "query": "..." }
+
+Mounted UI:
+  /  -> static/index.html</pre>
+          </div>
+        </section>
+
+        <section class="section" id="project-14-architecture">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 14 architecture</div>
+              <h2>How the modular app works</h2>
+              <p class="section-desc">The code is straightforward: one FastAPI app, one upload route, one chat route, one router module, one ingestion module, and one generation module. This is the best point in the track to connect theory, visual flow thinking, and actual app delivery.</p>
+            </div>
+          </div>
+
+          <div class="architecture-grid">
+            <div class="card"><h3>1. Upload</h3><p>Users upload PDF, CSV, TXT, or Markdown files and assign the content to a domain.</p></div>
+            <div class="card"><h3>2. Ingest</h3><p>The ingester extracts text, chunks it, and writes vectors into domain-specific Chroma collections.</p></div>
+            <div class="card"><h3>3. Route</h3><p>The router classifies each question into <code>api</code>, <code>ui</code>, or <code>perf</code>.</p></div>
+            <div class="card"><h3>4. Retrieve</h3><p>The generator opens the right vector store and retrieves the most relevant chunks.</p></div>
+            <div class="card"><h3>5. Generate</h3><p>The final answer model produces a grounded answer from retrieved context.</p></div>
+            <div class="card"><h3>6. Display</h3><p>The static dashboard exposes ingestion and chat from the same hosted UI.</p></div>
+          </div>
+
+          <div class="grid-2" style="margin-top:16px;">
+            <pre>router.py
+- ChatOpenAI structured output
+- returns api | ui | perf
+- fallback defaults to api
+
+ingester.py
+- extract text
+- split into chunks
+- add texts to Chroma collections</pre>
+            <pre>generator.py
+- route question
+- get vector store
+- retrieve top-k chunks
+- prompt answer model
+- return domain + answer</pre>
+          </div>
+        </section>
+
+        <section class="section" id="project-14-files">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 14 key files</div>
+              <h2>The files to open during a live walkthrough</h2>
+              <p class="section-desc">If you only have fifteen minutes, these are the files that explain the app fastest.</p>
+            </div>
+          </div>
+
+          <div class="file-grid">
+            <a class="file-card" href="../Project_14_RAG_VIBE_CODING/app.py">
+              <h3>FastAPI entrypoint</h3>
+              <p>Defines upload and chat endpoints and mounts the static frontend.</p>
+              <small>../Project_14_RAG_VIBE_CODING/app.py</small>
+            </a>
+            <a class="file-card" href="../Project_14_RAG_VIBE_CODING/static/index.html">
+              <h3>UI dashboard</h3>
+              <p>Shows ingestion and chat on a single page for live demos.</p>
+              <small>../Project_14_RAG_VIBE_CODING/static/index.html</small>
+            </a>
+            <a class="file-card" href="../Project_14_RAG_VIBE_CODING/rag/router.py">
+              <h3>Router module</h3>
+              <p>Maps each query to API, UI, or performance domain.</p>
+              <small>../Project_14_RAG_VIBE_CODING/rag/router.py</small>
+            </a>
+            <a class="file-card" href="../Project_14_RAG_VIBE_CODING/rag/ingester.py">
+              <h3>Ingestion module</h3>
+              <p>Extracts text, chunks it, and inserts into Chroma.</p>
+              <small>../Project_14_RAG_VIBE_CODING/rag/ingester.py</small>
+            </a>
+            <a class="file-card" href="../Project_14_RAG_VIBE_CODING/rag/generator.py">
+              <h3>Generation module</h3>
+              <p>Retrieves from the correct store and produces the answer.</p>
+              <small>../Project_14_RAG_VIBE_CODING/rag/generator.py</small>
+            </a>
+            <a class="file-card" href="../Project_14_RAG_VIBE_CODING/ChromaDB_viewer/README.md">
+              <h3>ChromaDB viewer</h3>
+              <p>Local Streamlit helper for exploring the vector collections used by the app.</p>
+              <small>../Project_14_RAG_VIBE_CODING/ChromaDB_viewer/README.md</small>
+            </a>
+          </div>
+        </section>
+
+        <section class="section" id="project-15">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 15</div>
+              <h2>Vector Embeddings Visualizer</h2>
+              <p class="section-desc">Project 15 is the teaching utility. It turns chunking, embeddings, cosine similarity, and vector projection into something students can actually see. This is the project to use when retrieval concepts still feel abstract.</p>
+            </div>
+            <div class="project-chip">Folder: Project_15_Vector_Embeddings_Visualizer</div>
+          </div>
+
+          <div class="grid-3">
+            <div class="card"><h3>Chunk cards</h3><p>Students can see how one long passage is split into retrieval units.</p></div>
+            <div class="card"><h3>Vector previews</h3><p>Shows that each chunk becomes a list of numbers, not magical hidden meaning.</p></div>
+            <div class="card"><h3>Similarity heatmap</h3><p>Makes chunk-to-chunk closeness easy to explain in class.</p></div>
+            <div class="card"><h3>2D projection</h3><p>Gives a simple visual map of chunk similarity without pretending it is the full space.</p></div>
+            <div class="card"><h3>Provider switching</h3><p>Lets you compare deterministic demo mode with Ollama, OpenAI, or Mistral embeddings.</p></div>
+            <div class="card"><h3>QA sample texts</h3><p>Good for workshops where you want a ready-made story, PRD paragraph, or bug report to explain retrieval.</p></div>
+          </div>
+
+          <div class="grid-2" style="margin-top:16px;">
+            <a class="file-card" href="../Project_15_Vector_Embeddings_Visualizer/README.md">
+              <h3>Main README</h3>
+              <p>Explains the purpose, providers, API, and workshop usage of the visualizer.</p>
+              <small>../Project_15_Vector_Embeddings_Visualizer/README.md</small>
+            </a>
+            <a class="file-card" href="../Project_15_Vector_Embeddings_Visualizer/frontend/index.html">
+              <h3>Frontend UI</h3>
+              <p>The single-page classroom UI used for chunking and vector demonstrations.</p>
+              <small>../Project_15_Vector_Embeddings_Visualizer/frontend/index.html</small>
+            </a>
+          </div>
+        </section>
+
+        <section class="section" id="project-15-providers">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 15 providers</div>
+              <h2>Embedding providers available in the app</h2>
+              <p class="section-desc">The default classroom mode should usually be the deterministic demo because it removes setup friction. Move to real providers only after students understand the concept.</p>
+            </div>
+          </div>
+
+          <div class="provider-grid">
+            <div class="card"><h3>Deterministic Demo</h3><p>No API key. Best for immediate classroom explanation and zero setup friction.</p></div>
+            <div class="card"><h3>Ollama / Nomic</h3><p>Local and free. Recommended when you want real embeddings without cloud dependence.</p></div>
+            <div class="card"><h3>OpenAI</h3><p>Uses <code>text-embedding-3-small</code> for a simple hosted production-like path.</p></div>
+          </div>
+
+          <div class="grid-2" style="margin-top:16px;">
+            <div class="callout success">
+              <h3>Suggested first workshop setup</h3>
+              <ul class="list">
+                <li>Start with demo mode.</li>
+                <li>Explain chunk size and overlap first.</li>
+                <li>Show heatmap second.</li>
+                <li>Switch to Ollama or OpenAI only after students understand the visualization.</li>
+              </ul>
+            </div>
+            <pre>{
+  "text": "As a user, I want to log in so I can access my dashboard.",
+  "provider": "ollama",
+  "model": "nomic-embed-text",
+  "chunk_size": 70,
+  "overlap": 18,
+  "max_chunks": 10
+}</pre>
+          </div>
+        </section>
+
+        <section class="section" id="project-15-classroom">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Project 15 classroom angle</div>
+              <h2>How to use the visualizer during the RAG course</h2>
+              <p class="section-desc">This project is most valuable as a bridge. Use it to explain chunking and embeddings before or during Project 12, then refer back to it when LangFlow and app-level retrieval start to feel opaque.</p>
+            </div>
+          </div>
+
+          <div class="flow-grid">
+            <div class="flow-step"><div class="step-num">1</div><strong>Paste input text</strong><span>Use a user story, PRD, or bug report that students can understand immediately.</span></div>
+            <div class="flow-step"><div class="step-num">2</div><strong>Tune chunking</strong><span>Show how chunk size and overlap change the retrieval units.</span></div>
+            <div class="flow-step"><div class="step-num">3</div><strong>Generate vectors</strong><span>Let students see chunk previews, vectors, and similarity outputs.</span></div>
+            <div class="flow-step"><div class="step-num">4</div><strong>Connect to RAG</strong><span>Explain how the same vectors later power retrieval in Projects 13 and 14.</span></div>
+          </div>
+        </section>
+
+        <section class="section" id="resources">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">All project entry points</div>
+              <h2>Useful files for the hosted version</h2>
+              <p class="section-desc">These links keep the docs page connected to the real repository artifacts so the page stays useful as both teaching material and a live navigation layer.</p>
+            </div>
+          </div>
+
+          <div class="file-grid">
+            <a class="file-card" href="../Project_12_RAG_Basics/README.md"><h3>Project 12 README</h3><p>Theory map and prerequisites.</p><small>../Project_12_RAG_Basics/README.md</small></a>
+            <a class="file-card" href="../Project_13_RAG_with_LangFlow/README.md"><h3>Project 13 README</h3><p>LangFlow RAG index and import instructions.</p><small>../Project_13_RAG_with_LangFlow/README.md</small></a>
+            <a class="file-card" href="../Project_14_RAG_VIBE_CODING/app.py"><h3>Project 14 app</h3><p>Main FastAPI entrypoint for the modular RAG app.</p><small>../Project_14_RAG_VIBE_CODING/app.py</small></a>
+            <a class="file-card" href="../Project_15_Vector_Embeddings_Visualizer/backend/app.py"><h3>Project 15 backend</h3><p>API routes for the embedding visualizer.</p><small>../Project_15_Vector_Embeddings_Visualizer/backend/app.py</small></a>
+          </div>
+        </section>
+
+        <footer class="footer">
+          Built from the current repository content for Projects 12 to 15. Layout direction is based on Mintlify-style documentation patterns, adapted to this repo as a single hosted HTML page.
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const themeToggle = document.getElementById('themeToggle');
+    const navSearch = document.getElementById('navSearch');
+    const navLinks = Array.from(document.querySelectorAll('.nav-link[href^="#"]'));
+    const sections = navLinks
+      .map(link => document.querySelector(link.getAttribute('href')))
+      .filter(Boolean);
+
+    menuToggle?.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    const storedTheme = localStorage.getItem('rag-docs-theme');
+    if (storedTheme) {
+      document.documentElement.setAttribute('data-theme', storedTheme);
+    }
+
+    themeToggle?.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('rag-docs-theme', next);
+    });
+
+    navSearch?.addEventListener('input', (event) => {
+      const term = event.target.value.trim().toLowerCase();
+      document.querySelectorAll('.nav-link').forEach((link) => {
+        const text = link.textContent.toLowerCase();
+        link.classList.toggle('hide', term && !text.includes(term));
+      });
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      const id = `#${visible.target.id}`;
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === id);
+      });
+    }, { rootMargin: '-25% 0px -55% 0px', threshold: [0.1, 0.2, 0.35] });
+
+    sections.forEach(section => observer.observe(section));
+
+    document.querySelectorAll('.nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 920) {
+          sidebar.classList.remove('open');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

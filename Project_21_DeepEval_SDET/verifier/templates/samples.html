@@ -1,0 +1,64 @@
+{% extends "_base.html" %}
+{% set nav_active = "samples" %}
+{% block title %}Sample Test Cases — DeepEval Verifier{% endblock %}
+
+{% block styles %}
+.hero { text-align: center; margin-bottom: 40px; }
+.hero h2 { font-size: 32px; font-weight: 800; margin-bottom: 8px; }
+.hero h2 span { color: var(--accent); }
+.hero p { font-size: 16px; color: var(--text-dim); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+.stats-row { display: flex; gap: 16px; justify-content: center; margin: 24px 0 40px; }
+.stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 28px; text-align: center; }
+.stat .num { font-size: 28px; font-weight: 800; color: var(--accent); }
+.stat .label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-top: 2px; }
+.category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 24px; }
+.category-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; transition: all 0.3s; text-decoration: none; color: inherit; display: block; }
+.category-card:hover { border-color: var(--accent-dim); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+.category-card .icon { font-size: 32px; margin-bottom: 12px; }
+.category-card .title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.category-card .desc { font-size: 14px; color: var(--text-dim); line-height: 1.5; margin-bottom: 16px; }
+.sample-count { display: inline-flex; background: var(--accent-glow); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+.difficulty-tags { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+.diff-tag { font-size: 11px; padding: 3px 10px; border-radius: 12px; }
+.diff-tag.basic { background: var(--green-dim); color: var(--green); }
+.diff-tag.medium { background: var(--yellow-dim); color: var(--yellow); }
+.diff-tag.advanced { background: var(--red-dim); color: var(--red); }
+.sample-preview-list { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px; }
+.sample-preview { font-size: 13px; color: var(--text-muted); padding: 4px 0; display: flex; gap: 8px; align-items: center; }
+.sample-preview::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--accent-dim); }
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="hero">
+        <h2>Pre-Loaded <span>Sample Test Cases</span></h2>
+        <p>Ready-to-evaluate scenarios with realistic chatbot responses. Each sample includes query, LLM output, expected output, and retrieval context — just click Evaluate.</p>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat"><div class="num">{{ categories|length }}</div><div class="label">Categories</div></div>
+        <div class="stat"><div class="num">{% set ns = namespace(c=0) %}{% for cat in categories.values() %}{% set ns.c = ns.c + cat.samples|length %}{% endfor %}{{ ns.c }}</div><div class="label">Test Cases</div></div>
+        <div class="stat"><div class="num">9</div><div class="label">Metrics</div></div>
+    </div>
+
+    <div class="category-grid">
+        {% for cat_id, cat in categories.items() %}
+        <a class="category-card" href="/samples/{{ cat_id }}">
+            <div class="icon">{{ cat.icon | safe }}</div>
+            <div class="title">{{ cat.title }}</div>
+            <div class="desc">{{ cat.description }}</div>
+            <span class="sample-count">{{ cat.samples|length }} test cases</span>
+            <div class="difficulty-tags">
+                {% set diffs = [] %}
+                {% for s in cat.samples %}{% if s.difficulty not in diffs %}{% if diffs.append(s.difficulty) %}{% endif %}{% endif %}{% endfor %}
+                {% for d in diffs %}<span class="diff-tag {{ d }}">{{ d }}</span>{% endfor %}
+            </div>
+            <div class="sample-preview-list">
+                {% for s in cat.samples[:4] %}<div class="sample-preview">{{ s.name }}</div>{% endfor %}
+                {% if cat.samples|length > 4 %}<div class="sample-preview" style="color: var(--accent);">+{{ cat.samples|length - 4 }} more...</div>{% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

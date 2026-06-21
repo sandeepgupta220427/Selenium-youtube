@@ -1,0 +1,4854 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LLM Glossary for QA/SDET</title>
+  <meta name="description" content="In-depth LLM glossary tutorial for QA/SDET with definitions, examples, ELI5 explanations, QA usage, and diagrams." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --nav-h: 58px;
+      --sb-w: 286px;
+      --bg: #ffffff;
+      --bg-soft: #f8fafc;
+      --bg-card: #ffffff;
+      --line: #e5e7eb;
+      --line-2: #d1d5db;
+      --txt: #111827;
+      --txt-2: #374151;
+      --txt-3: #6b7280;
+      --accent: #16a34a;
+      --accent-2: #15803d;
+      --accent-bg: #f0fdf4;
+      --warn: #b91c1c;
+      --radius: 10px;
+      --shadow: 0 6px 24px rgba(17,24,39,0.06);
+      color-scheme: light;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0f0f0f;
+      --bg-soft: #161616;
+      --bg-card: #121212;
+      --line: #262626;
+      --line-2: #3a3a3a;
+      --txt: #f3f4f6;
+      --txt-2: #d1d5db;
+      --txt-3: #9ca3af;
+      --accent: #22c55e;
+      --accent-2: #4ade80;
+      --accent-bg: #052e16;
+      --warn: #f87171;
+      --shadow: none;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      color: var(--txt);
+      background: var(--bg);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    code {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 2px 6px;
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      border-radius: 6px;
+      color: var(--accent-2);
+    }
+
+    .topnav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in oklab, var(--bg) 92%, transparent);
+      backdrop-filter: blur(10px);
+      z-index: 300;
+    }
+
+    .brand {
+      width: var(--sb-w);
+      min-width: var(--sb-w);
+      border-right: 1px solid var(--line);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+    }
+
+    .brand .dot {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .brand em { font-style: normal; color: var(--accent); }
+
+    .top-center {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      color: var(--txt-3);
+      font-size: 14px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 16px;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      color: var(--txt-2);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn:hover { border-color: var(--line-2); }
+
+    .shell { display: flex; padding-top: var(--nav-h); min-height: 100vh; }
+
+    .sidebar {
+      position: fixed;
+      top: var(--nav-h);
+      left: 0;
+      bottom: 0;
+      width: var(--sb-w);
+      min-width: var(--sb-w);
+      border-right: 1px solid var(--line);
+      background: var(--bg);
+      overflow-y: auto;
+      padding: 14px 10px 18px;
+    }
+
+    .search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--bg-soft);
+      margin-bottom: 14px;
+    }
+
+    .search-wrap input {
+      border: none;
+      outline: none;
+      width: 100%;
+      background: transparent;
+      color: var(--txt);
+      font-family: var(--font);
+      font-size: 13px;
+    }
+
+    .side-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--txt-3);
+      font-weight: 700;
+      margin: 12px 8px 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 2px 4px;
+      padding: 7px 10px;
+      border-radius: 8px;
+      color: var(--txt-2);
+      text-decoration: none;
+      font-size: 13px;
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-soft);
+      border-color: var(--line);
+      color: var(--txt);
+    }
+
+    .nav-item span {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--txt-3);
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      padding: 1px 7px;
+    }
+
+    .content {
+      margin-left: var(--sb-w);
+      width: 100%;
+      padding: 34px 28px 80px;
+      max-width: calc(100vw - var(--sb-w));
+    }
+
+    .hero {
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 28px;
+      margin-bottom: 22px;
+    }
+
+    .crumb {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      color: var(--accent-2);
+      background: var(--accent-bg);
+      border: 1px solid color-mix(in oklab, var(--accent) 25%, var(--line));
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      font-size: clamp(1.75rem, 3vw, 2.65rem);
+      letter-spacing: -0.8px;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .hero p { color: var(--txt-3); max-width: 950px; }
+
+    .hero-stats {
+      margin-top: 16px;
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      color: var(--txt-2);
+      font-size: 13px;
+    }
+
+    .hero-stats b { color: var(--txt); font-size: 19px; display: block; }
+
+    .quick-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+    }
+
+    .quick-card {
+      border: 1px solid var(--line);
+      background: var(--bg-soft);
+      border-radius: 10px;
+      padding: 12px;
+    }
+
+    .quick-card h3 { font-size: 14px; margin-bottom: 6px; color: var(--txt); }
+    .quick-card p { font-size: 13px; color: var(--txt-3); }
+
+    .diagram {
+      margin-top: 10px;
+      background: #0b1220;
+      color: #dbeafe;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 12px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.45;
+      overflow-x: auto;
+    }
+
+    .doc-section {
+      border-top: 1px solid var(--line);
+      padding-top: 28px;
+      margin-top: 28px;
+    }
+
+    .section-header { margin-bottom: 14px; }
+    .section-header .badge {
+      display: inline-block;
+      background: var(--accent-bg);
+      color: var(--accent-2);
+      border: 1px solid color-mix(in oklab, var(--accent) 20%, var(--line));
+      font-family: var(--mono);
+      font-size: 11px;
+      border-radius: 99px;
+      padding: 2px 9px;
+      margin-bottom: 10px;
+    }
+
+    .section-header h2 {
+      font-size: clamp(1.4rem, 2.2vw, 2rem);
+      letter-spacing: -0.4px;
+      margin-bottom: 6px;
+    }
+
+    .section-header p { color: var(--txt-3); max-width: 860px; }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .concept-card {
+      border: 1px solid var(--line);
+      background: var(--bg-card);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: repeat(2, minmax(280px, 1fr));
+      gap: 10px 16px;
+    }
+
+    .concept-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 10px;
+      border-bottom: 1px dashed var(--line);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      grid-column: 1 / -1;
+    }
+
+    .concept-head h3 { font-size: 1rem; letter-spacing: -0.2px; }
+    .pill {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      border: 1px solid var(--line);
+      color: var(--txt-3);
+      border-radius: 99px;
+      padding: 1px 8px;
+      white-space: nowrap;
+    }
+
+    .concept-block { margin-top: 0; }
+    .concept-block h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--accent-2);
+      margin-bottom: 4px;
+    }
+
+    .concept-block p, .concept-block li { font-size: 13px; color: var(--txt-2); }
+    .concept-block ul { margin-left: 18px; }
+
+    .eli5 {
+      background: color-mix(in oklab, var(--accent-bg) 75%, var(--bg-card));
+      border: 1px solid color-mix(in oklab, var(--accent) 18%, var(--line));
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .key-checks {
+      border-left: 3px solid color-mix(in oklab, var(--accent) 60%, var(--line));
+      padding-left: 10px;
+      grid-column: 1 / -1;
+    }
+
+    .hidden { display: none !important; }
+
+    .footer {
+      margin-top: 40px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      color: var(--txt-3);
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .sidebar { display: none; }
+      .brand { width: auto; min-width: auto; border-right: none; }
+      .content {
+        margin-left: 0;
+        max-width: 100vw;
+        padding: 26px 16px 64px;
+      }
+      .top-center { display: none; }
+      .concept-grid { grid-template-columns: 1fr; }
+      .concept-card { grid-template-columns: 1fr; }
+      .concept-head, .key-checks { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="topnav">
+    <div class="brand"><span class="dot">LLM</span> <span>QA/SDET <em>Glossary</em></span></div>
+    <div class="top-center">Single-file tutorial with definitions, examples, ELI5, and QA usage for all requested concepts.</div>
+    <div class="top-actions">
+      <button class="btn" id="themeBtn" type="button">Toggle Theme</button>
+      <a class="btn" href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">Transformer Paper</a>
+    </div>
+  </nav>
+
+  <div class="shell">
+    <aside class="sidebar" aria-label="Glossary navigation">
+      <div class="search-wrap">
+        <span>🔎</span>
+        <input id="sideSearch" type="text" placeholder="Search concept..." />
+      </div>
+
+      <div class="side-label">Sections</div>
+      <a class='nav-item' href='#sec-4-1-foundations-and-prompting'>Foundations and Prompting <span>14</span></a><a class='nav-item' href='#sec-4-2-retrieval-embeddings-and-rag'>Retrieval, Embeddings, and RAG <span>20</span></a><a class='nav-item' href='#sec-4-3-model-internals-and-architecture'>Model Internals and Architecture <span>11</span></a><a class='nav-item' href='#sec-4-4-training-and-alignment'>Training and Alignment <span>12</span></a><a class='nav-item' href='#sec-4-5-reasoning-and-prompt-strategies'>Reasoning and Prompt Strategies <span>6</span></a><a class='nav-item' href='#sec-4-6-inference-performance-and-cost'>Inference, Performance, and Cost <span>11</span></a><a class='nav-item' href='#sec-4-7-tools-agents-and-memory'>Tools, Agents, and Memory <span>15</span></a><a class='nav-item' href='#sec-4-8-security-safety-and-evaluation'>Security, Safety, and Evaluation <span>7</span></a><a class='nav-item' href='#sec-4-9-observability-and-operations'>Observability and Operations <span>5</span></a>
+
+      <div class="side-label">Quick Anchor</div>
+      <a class="nav-item" href="#overview">Overview <span>Start</span></a>
+      <a class="nav-item" href="#transformer">Transformer for QA <span>Core</span></a>
+      <a class="nav-item" href="#rag-diagram">RAG Diagram <span>Flow</span></a>
+      <a class="nav-item" href="#agent-diagram">Agent Diagram <span>Flow</span></a>
+      <a class="nav-item" href="#qa-playbook">QA Playbook <span>Ops</span></a>
+    </aside>
+
+    <main class="content" id="overview">
+      <section class="hero">
+        <span class="crumb">LLM Basics • QA/SDET Deep Tutorial</span>
+        <h1>LLM Glossary for QA/SDET (In-depth, Example-driven, ELI5 included)</h1>
+        <p>This page explains all concepts in one place using a docs-style structure similar to your reference. Every concept includes: <strong>definition</strong>, <strong>example</strong>, <strong>how QA can use it</strong>, <strong>ELI5 explanation</strong>, and <strong>key checks</strong>.</p>
+
+        <div class="hero-stats">
+          <div><b>100</b> Concepts Covered</div>
+          <div><b>9</b> Thematic Sections</div>
+          <div><b>1</b> Core Transformer Link</div>
+          <div><b>QA/SDET</b> Focus for Every Card</div>
+        </div>
+
+        <div class="quick-grid">
+          <article class="quick-card" id="transformer">
+            <h3>5th-Grade Explanation (Simple)</h3>
+            <p>An LLM is like a super-fast autocomplete friend. It reads your words, guesses the next best word, and keeps going. RAG is like letting this friend quickly open a notebook first so answers are based on facts, not guesses.</p>
+          </article>
+          <article class="quick-card">
+            <h3>Single Core Link (Transformer Foundation)</h3>
+            <p><a href="https://arxiv.org/html/1706.03762v7" target="_blank" rel="noreferrer">https://arxiv.org/html/1706.03762v7</a></p>
+          </article>
+          <article class="quick-card">
+            <h3>How QA Should Use This Guide</h3>
+            <p>Pick one section, create 5 regression prompts, add expected behavior checks, then measure quality + latency + safety before release.</p>
+          </article>
+        </div>
+
+        <div class="diagram" id="rag-diagram">
+RAG Pipeline (QA View)
+
+User Prompt
+  -> Safety Guardrails
+  -> Retriever (Vector / BM25 / Hybrid)
+  -> Re-ranking (optional)
+  -> Prompt Assembly (Context + Question)
+  -> LLM Inference
+  -> Structured Output Validation
+  -> App Response
+  -> Tracing + Monitoring + Cost Metrics
+        </div>
+
+        <div class="diagram" id="agent-diagram" style="margin-top:12px;">
+Agent Workflow (QA View)
+
+Goal -> Planner -> Tool Selection -> Tool Invocation
+     -> Memory Read/Write -> Executor -> Reflection
+     -> Final Answer -> Observability + Safety Checks
+        </div>
+      </section>
+
+      
+<section class="doc-section" id="sec-4-1-foundations-and-prompting">
+  <div class="section-header">
+    <span class="badge">4.1</span>
+    <h2>Foundations and Prompting</h2>
+    <p>Use this when designing stable prompt contracts and output controls.</p>
+  </div>
+  <div class="concept-grid">
+    
+<article class="concept-card" id="term-llm" data-search="llm large language model that predicts and generates text tokens. validate quality, safety, and consistency across test sets.">
+  <div class="concept-head">
+    <h3>LLM</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Large Language Model that predicts and generates text tokens.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>A release assistant summarizes 300 Jira tickets and proposes risk hotspots for regression testing.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate quality, safety, and consistency across test sets.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>LLM</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-transformer" data-search="transformer attention-based neural architecture used by most modern llms. test long-context behavior and scaling impacts.">
+  <div class="concept-head">
+    <h3>Transformer</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Attention-based neural architecture used by most modern LLMs.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You compare model quality on 1k vs 12k-token prompts to detect long-context degradation.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test long-context behavior and scaling impacts.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Transformer</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-token" data-search="token small text unit processed by model (word piece/subword). verify token budget boundaries and truncation.">
+  <div class="concept-head">
+    <h3>Token</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Small text unit processed by model (word piece/subword).</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>A bug triage response cuts off because max output tokens are too low; you add token guards.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Verify token budget boundaries and truncation.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Token</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-tokenization" data-search="tokenization process that converts text to tokens and back. test edge cases: unicode, emojis, mixed-language, code blocks.">
+  <div class="concept-head">
+    <h3>Tokenization</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Process that converts text to tokens and back.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Japanese + emoji logs produce unexpected token growth; you test multilingual tokenizer behavior.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test edge cases: Unicode, emojis, mixed-language, code blocks.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Tokenization</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-context-window" data-search="context window max token span model can consider in one inference. test boundary prompts near max window.">
+  <div class="concept-head">
+    <h3>Context Window</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Max token span model can consider in one inference.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>A full PRD + test strategy exceeds context length; you introduce chunking and retrieval.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test boundary prompts near max window.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Context Window</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-prompt" data-search="prompt input instruction/context sent to the model. validate prompt templates and required variables.">
+  <div class="concept-head">
+    <h3>Prompt</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Input instruction/context sent to the model.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Prompt template asks: objective, constraints, expected output schema for test case generation.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate prompt templates and required variables.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Prompt</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-prompt-engineering" data-search="prompt engineering designing prompts for reliable model behavior. maintain prompt regression tests and output contracts.">
+  <div class="concept-head">
+    <h3>Prompt Engineering</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Designing prompts for reliable model behavior.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You refine prompts so generated test cases include positive, negative, and edge scenarios.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Maintain prompt regression tests and output contracts.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Prompt Engineering</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-system-prompt" data-search="system prompt highest-priority instruction controlling assistant behavior. test policy precedence vs user instructions.">
+  <div class="concept-head">
+    <h3>System Prompt</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Highest-priority instruction controlling assistant behavior.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>System rule says: &quot;Use only provided context&quot; and blocks unsupported claims.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test policy precedence vs user instructions.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>System Prompt</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-user-prompt" data-search="user prompt user-provided message/question. fuzz test ambiguous, adversarial, and malformed inputs.">
+  <div class="concept-head">
+    <h3>User Prompt</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>User-provided message/question.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>User asks for &quot;top critical login tests&quot; and model returns prioritized cases.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Fuzz test ambiguous, adversarial, and malformed inputs.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>User Prompt</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-temperature" data-search="temperature sampling randomness control. lower is more deterministic. assert repeatability at low temperature.">
+  <div class="concept-head">
+    <h3>Temperature</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Sampling randomness control. Lower is more deterministic.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>At temperature 0, the same prompt should return stable output for regression tests.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Assert repeatability at low temperature.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Temperature</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-top-p" data-search="top-p nucleus sampling threshold for token selection. compare response variability across values.">
+  <div class="concept-head">
+    <h3>Top-P</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Nucleus sampling threshold for token selection.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>top-p 0.3 for deterministic bug summaries; top-p 0.9 for brainstorming test ideas.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Compare response variability across values.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Top-P</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-top-k" data-search="top-k sampling from top k likely tokens. validate quality/creativity tradeoff in tuned configs.">
+  <div class="concept-head">
+    <h3>Top-K</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Sampling from top K likely tokens.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>top-k is tuned to reduce repetitive outputs in API test design suggestions.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate quality/creativity tradeoff in tuned configs.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Top-K</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-max-tokens" data-search="max tokens max generated output token count. ensure truncation and stop behavior are graceful.">
+  <div class="concept-head">
+    <h3>Max Tokens</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Max generated output token count.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You cap long incident summaries to avoid runaway responses and cost spikes.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Ensure truncation and stop behavior are graceful.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Max Tokens</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-stop-sequence" data-search="stop sequence token/text pattern where generation must stop. test leak prevention and early termination correctness.">
+  <div class="concept-head">
+    <h3>Stop Sequence</h3>
+    <span class="pill">Beginner</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Token/text pattern where generation must stop.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like giving very clear instructions to a smart robot helper.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Generation stops at `END_JSON` so parser receives valid payload only.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test leak prevention and early termination correctness.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when designing stable prompt contracts and output controls.</li>
+      <li><strong>Failure mode:</strong> Unclear prompts create inconsistent outputs and brittle tests.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Stop Sequence</code>.</li>
+    </ul>
+  </div>
+</article>
+
+  </div>
+</section>
+
+<section class="doc-section" id="sec-4-2-retrieval-embeddings-and-rag">
+  <div class="section-header">
+    <span class="badge">4.2</span>
+    <h2>Retrieval, Embeddings, and RAG</h2>
+    <p>Use this when improving retrieval quality and grounded responses.</p>
+  </div>
+  <div class="concept-grid">
+    
+<article class="concept-card" id="term-embedding" data-search="embedding dense numeric representation of text meaning. validate same-text stability and semantic grouping.">
+  <div class="concept-head">
+    <h3>Embedding</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Dense numeric representation of text meaning.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>User stories are embedded and clustered to detect duplicate test intents.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate same-text stability and semantic grouping.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Embedding</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-vector" data-search="vector numeric array representing semantic features. check dimensions and schema consistency.">
+  <div class="concept-head">
+    <h3>Vector</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Numeric array representing semantic features.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Vector&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Check dimensions and schema consistency.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Vector</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-vector-similarity" data-search="vector similarity score for semantic closeness of vectors. verify nearest-neighbor ranking on known pairs.">
+  <div class="concept-head">
+    <h3>Vector Similarity</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Score for semantic closeness of vectors.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Vector Similarity&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Verify nearest-neighbor ranking on known pairs.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Vector Similarity</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-cosine-similarity" data-search="cosine similarity common vector angle-based similarity metric. unit test expected high/low similarity examples.">
+  <div class="concept-head">
+    <h3>Cosine Similarity</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Common vector angle-based similarity metric.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Cosine Similarity&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Unit test expected high/low similarity examples.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Cosine Similarity</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-vector-database" data-search="vector database store optimized for vectors + nearest-neighbor search. test ingest integrity, filters, persistence, and recall.">
+  <div class="concept-head">
+    <h3>Vector Database</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Store optimized for vectors + nearest-neighbor search.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Chroma stores chunk embeddings from SOP docs for fast semantic retrieval.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test ingest integrity, filters, persistence, and recall.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Vector Database</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-chunking" data-search="chunking splitting documents into smaller retrieval units. evaluate chunk size/overlap impact on answer quality.">
+  <div class="concept-head">
+    <h3>Chunking</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Splitting documents into smaller retrieval units.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Chunking&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Evaluate chunk size/overlap impact on answer quality.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Chunking</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-document-loader" data-search="document loader component to read files/web/docs into pipeline. test parsing failures, file type handling, encoding issues.">
+  <div class="concept-head">
+    <h3>Document Loader</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Component to read files/web/docs into pipeline.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Document Loader&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test parsing failures, file type handling, encoding issues.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Document Loader</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-text-splitter" data-search="text splitter utility to split text by size/semantic boundaries. validate no data loss and stable chunk ids.">
+  <div class="concept-head">
+    <h3>Text Splitter</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Utility to split text by size/semantic boundaries.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Text Splitter&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate no data loss and stable chunk IDs.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Text Splitter</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-retrieval" data-search="retrieval fetching relevant context from kb/vector store. measure precision@k, recall@k, and latency.">
+  <div class="concept-head">
+    <h3>Retrieval</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Fetching relevant context from KB/vector store.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Retrieval&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Measure precision@k, recall@k, and latency.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Retrieval</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-retriever" data-search="retriever component implementing retrieval strategy. compare bm25/vector/hybrid retriever quality.">
+  <div class="concept-head">
+    <h3>Retriever</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Component implementing retrieval strategy.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Retriever&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Compare BM25/vector/hybrid retriever quality.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Retriever</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-semantic-search" data-search="semantic search meaning-based retrieval using embeddings. test synonym and paraphrase retrieval quality.">
+  <div class="concept-head">
+    <h3>Semantic Search</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Meaning-based retrieval using embeddings.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Semantic Search&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test synonym and paraphrase retrieval quality.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Semantic Search</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-rag-retrieval-augmented-generation" data-search="rag (retrieval augmented generation) grounding generation with retrieved context. assert citations/grounding and fallback on missing context.">
+  <div class="concept-head">
+    <h3>RAG (Retrieval Augmented Generation)</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Grounding generation with retrieved context.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Before answering, model retrieves latest release notes and support runbooks.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Assert citations/grounding and fallback on missing context.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>RAG (Retrieval Augmented Generation)</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-hybrid-search" data-search="hybrid search combines lexical + semantic retrieval. validate improved recall on exact ids + fuzzy intent.">
+  <div class="concept-head">
+    <h3>Hybrid Search</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Combines lexical + semantic retrieval.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Query includes exact build ID + semantic defect description using BM25 + vectors.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate improved recall on exact IDs + fuzzy intent.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Hybrid Search</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-indexing" data-search="indexing preprocessing + storing searchable document representations. verify re-indexing, versioning, and duplicate handling.">
+  <div class="concept-head">
+    <h3>Indexing</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Preprocessing + storing searchable document representations.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Indexing&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Verify re-indexing, versioning, and duplicate handling.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Indexing</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-re-ranking" data-search="re-ranking reordering retrieved candidates with stronger ranker. test top-n relevance improvement vs latency overhead.">
+  <div class="concept-head">
+    <h3>Re-ranking</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Reordering retrieved candidates with stronger ranker.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Top 25 retrieved chunks are reranked to top 5 for cleaner grounded answers.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test top-n relevance improvement vs latency overhead.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Re-ranking</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-grounding" data-search="grounding constraining answers to trusted context/sources. detect unsupported claims in output.">
+  <div class="concept-head">
+    <h3>Grounding</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Constraining answers to trusted context/sources.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Assistant must cite source snippets before claiming production impact.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Detect unsupported claims in output.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Grounding</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-hallucination" data-search="hallucination confident but unsupported/incorrect model output. run hallucination benchmark and policy checks.">
+  <div class="concept-head">
+    <h3>Hallucination</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Confident but unsupported/incorrect model output.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Model invents an API endpoint not in docs; test should flag unsupported output.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Run hallucination benchmark and policy checks.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Hallucination</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-knowledge-base" data-search="knowledge base curated domain repository for retrieval. validate freshness, ownership, and update workflows.">
+  <div class="concept-head">
+    <h3>Knowledge Base</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Curated domain repository for retrieval.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Knowledge Base&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate freshness, ownership, and update workflows.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Knowledge Base</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-knowledge-graph" data-search="knowledge graph entity-relationship graph for structured reasoning. test relation query correctness and graph consistency.">
+  <div class="concept-head">
+    <h3>Knowledge Graph</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Entity-relationship graph for structured reasoning.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Service dependency graph helps identify downstream regression impact.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test relation query correctness and graph consistency.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Knowledge Graph</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-embedding-model" data-search="embedding model model used to generate embeddings. ensure ingest/query use same embedding model family.">
+  <div class="concept-head">
+    <h3>Embedding Model</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Model used to generate embeddings.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like finding the right page in a giant notebook before answering.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You query your test knowledge base for &#x27;Embedding Model&#x27;-related issues and validate top-k relevance.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Ensure ingest/query use same embedding model family.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when improving retrieval quality and grounded responses.</li>
+      <li><strong>Failure mode:</strong> Weak chunking/retrieval causes wrong context and hallucinations.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Embedding Model</code>.</li>
+    </ul>
+  </div>
+</article>
+
+  </div>
+</section>
+
+<section class="doc-section" id="sec-4-3-model-internals-and-architecture">
+  <div class="section-header">
+    <span class="badge">4.3</span>
+    <h2>Model Internals and Architecture</h2>
+    <p>Use this to understand model behavior under complex/long inputs.</p>
+  </div>
+  <div class="concept-grid">
+    
+<article class="concept-card" id="term-attention" data-search="attention mechanism weighting relevant tokens for each step. probe attention-sensitive tasks and long dependencies.">
+  <div class="concept-head">
+    <h3>Attention</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Mechanism weighting relevant tokens for each step.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like how the model&#x27;s brain focuses and remembers order.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Attention is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Probe attention-sensitive tasks and long dependencies.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to understand model behavior under complex/long inputs.</li>
+      <li><strong>Failure mode:</strong> Long context can increase noise and degrade precision.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Attention</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-self-attention" data-search="self-attention attention where sequence tokens attend to each other. test contextual resolution across long prompts.">
+  <div class="concept-head">
+    <h3>Self-Attention</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Attention where sequence tokens attend to each other.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like how the model&#x27;s brain focuses and remembers order.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Self-Attention is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test contextual resolution across long prompts.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to understand model behavior under complex/long inputs.</li>
+      <li><strong>Failure mode:</strong> Long context can increase noise and degrade precision.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Self-Attention</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-multi-head-attention" data-search="multi-head attention multiple attention heads learning different relations. evaluate robustness on varied linguistic patterns.">
+  <div class="concept-head">
+    <h3>Multi-Head Attention</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Multiple attention heads learning different relations.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like how the model&#x27;s brain focuses and remembers order.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Multi-Head Attention is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Evaluate robustness on varied linguistic patterns.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to understand model behavior under complex/long inputs.</li>
+      <li><strong>Failure mode:</strong> Long context can increase noise and degrade precision.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Multi-Head Attention</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-positional-encoding" data-search="positional encoding position signal added so order is represented. test sentence-order changes and meaning preservation.">
+  <div class="concept-head">
+    <h3>Positional Encoding</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Position signal added so order is represented.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like how the model&#x27;s brain focuses and remembers order.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Positional Encoding is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test sentence-order changes and meaning preservation.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to understand model behavior under complex/long inputs.</li>
+      <li><strong>Failure mode:</strong> Long context can increase noise and degrade precision.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Positional Encoding</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-decoder" data-search="decoder generates output tokens autoregressively. verify causal behavior and stop conditions.">
+  <div class="concept-head">
+    <h3>Decoder</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Generates output tokens autoregressively.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like how the model&#x27;s brain focuses and remembers order.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Decoder is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Verify causal behavior and stop conditions.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to understand model behavior under complex/long inputs.</li>
+      <li><strong>Failure mode:</strong> Long context can increase noise and degrade precision.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Decoder</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-encoder" data-search="encoder produces contextual representation from input sequence. test representation quality on classification/retrieval tasks.">
+  <div class="concept-head">
+    <h3>Encoder</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Produces contextual representation from input sequence.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like how the model&#x27;s brain focuses and remembers order.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Encoder is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test representation quality on classification/retrieval tasks.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to understand model behavior under complex/long inputs.</li>
+      <li><strong>Failure mode:</strong> Long context can increase noise and degrade precision.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Encoder</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-encoder-decoder" data-search="encoder-decoder two-stack architecture for seq2seq tasks. validate cross-attention behavior on translation-style tasks.">
+  <div class="concept-head">
+    <h3>Encoder-Decoder</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Two-stack architecture for seq2seq tasks.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like how the model&#x27;s brain focuses and remembers order.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Encoder-Decoder is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate cross-attention behavior on translation-style tasks.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to understand model behavior under complex/long inputs.</li>
+      <li><strong>Failure mode:</strong> Long context can increase noise and degrade precision.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Encoder-Decoder</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-autoregressive-model" data-search="autoregressive model generates one token at a time from prior tokens. check next-token drift and error accumulation.">
+  <div class="concept-head">
+    <h3>Autoregressive Model</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Generates one token at a time from prior tokens.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like how the model&#x27;s brain focuses and remembers order.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Autoregressive Model is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Check next-token drift and error accumulation.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to understand model behavior under complex/long inputs.</li>
+      <li><strong>Failure mode:</strong> Long context can increase noise and degrade precision.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Autoregressive Model</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-next-token-prediction" data-search="next token prediction objective to predict following token. use perplexity-style regression for baseline changes.">
+  <div class="concept-head">
+    <h3>Next Token Prediction</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Objective to predict following token.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like how the model&#x27;s brain focuses and remembers order.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Next Token Prediction is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Use perplexity-style regression for baseline changes.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to understand model behavior under complex/long inputs.</li>
+      <li><strong>Failure mode:</strong> Long context can increase noise and degrade precision.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Next Token Prediction</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-parameters" data-search="parameters trainable scalar values in a model. track model variant differences in performance/cost.">
+  <div class="concept-head">
+    <h3>Parameters</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Trainable scalar values in a model.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like how the model&#x27;s brain focuses and remembers order.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Parameters is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Track model variant differences in performance/cost.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to understand model behavior under complex/long inputs.</li>
+      <li><strong>Failure mode:</strong> Long context can increase noise and degrade precision.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Parameters</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-weights" data-search="weights learned parameter tensors in layers. validate model checksum/versioning in deployment.">
+  <div class="concept-head">
+    <h3>Weights</h3>
+    <span class="pill">Core</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Learned parameter tensors in layers.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like how the model&#x27;s brain focuses and remembers order.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Weights is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate model checksum/versioning in deployment.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to understand model behavior under complex/long inputs.</li>
+      <li><strong>Failure mode:</strong> Long context can increase noise and degrade precision.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Weights</code>.</li>
+    </ul>
+  </div>
+</article>
+
+  </div>
+</section>
+
+<section class="doc-section" id="sec-4-4-training-and-alignment">
+  <div class="section-header">
+    <span class="badge">4.4</span>
+    <h2>Training and Alignment</h2>
+    <p>Use this when comparing trained variants and alignment quality.</p>
+  </div>
+  <div class="concept-grid">
+    
+<article class="concept-card" id="term-pretraining" data-search="pretraining large-scale unsupervised training on broad corpora. understand baseline strengths/weaknesses and bias origin.">
+  <div class="concept-head">
+    <h3>Pretraining</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Large-scale unsupervised training on broad corpora.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Pretraining is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Understand baseline strengths/weaknesses and bias origin.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Pretraining</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-training-dataset" data-search="training dataset data used for model training phases. audit data quality, leakage, and representativeness.">
+  <div class="concept-head">
+    <h3>Training Dataset</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Data used for model training phases.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Training Dataset is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Audit data quality, leakage, and representativeness.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Training Dataset</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-fine-tuning" data-search="fine-tuning additional training for domain/task adaptation. regression-test pre/post fine-tune behavior.">
+  <div class="concept-head">
+    <h3>Fine-tuning</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Additional training for domain/task adaptation.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Model is fine-tuned on internal defect taxonomy to improve triage labels.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Regression-test pre/post fine-tune behavior.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Fine-tuning</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-instruction-tuning" data-search="instruction tuning fine-tuning on instruction-response examples. validate instruction-following and refusal behavior.">
+  <div class="concept-head">
+    <h3>Instruction Tuning</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Fine-tuning on instruction-response examples.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Instruction-tuned model follows output schema for test plans more reliably.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate instruction-following and refusal behavior.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Instruction Tuning</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-supervised-fine-tuning-sft" data-search="supervised fine-tuning (sft) label-based fine-tuning with curated outputs. check overfitting and style constraints.">
+  <div class="concept-head">
+    <h3>Supervised Fine-Tuning (SFT)</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Label-based fine-tuning with curated outputs.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>SFT on human-written test strategy examples improves structure and clarity.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Check overfitting and style constraints.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Supervised Fine-Tuning (SFT)</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-reinforcement-learning-from-human-feedback-rlhf" data-search="reinforcement learning from human feedback (rlhf) preference-based optimization using reward models/human feedback. validate helpfulness vs harmlessness tradeoffs.">
+  <div class="concept-head">
+    <h3>Reinforcement Learning from Human Feedback (RLHF)</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Preference-based optimization using reward models/human feedback.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Human preferences reward concise, safe, and relevant QA recommendations.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate helpfulness vs harmlessness tradeoffs.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Reinforcement Learning from Human Feedback (RLHF)</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-alignment" data-search="alignment techniques to keep model behavior aligned with goals/policies. test policy adherence under adversarial prompts.">
+  <div class="concept-head">
+    <h3>Alignment</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Techniques to keep model behavior aligned with goals/policies.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Model is aligned to refuse unsafe code execution suggestions.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test policy adherence under adversarial prompts.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Alignment</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-safety-guardrails" data-search="safety guardrails safety controls to reduce harmful outputs/actions. build harmful-content and abuse scenario suites.">
+  <div class="concept-head">
+    <h3>Safety Guardrails</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Safety controls to reduce harmful outputs/actions.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Guardrails block secrets exposure from prompts containing production tokens.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Build harmful-content and abuse scenario suites.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Safety Guardrails</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-perplexity" data-search="perplexity metric for uncertainty over token prediction. use for model comparison trends, not sole quality metric.">
+  <div class="concept-head">
+    <h3>Perplexity</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Metric for uncertainty over token prediction.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Perplexity is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Use for model comparison trends, not sole quality metric.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Perplexity</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-distillation" data-search="distillation compressing larger model knowledge into smaller model. compare quality drop vs latency/cost gains.">
+  <div class="concept-head">
+    <h3>Distillation</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Compressing larger model knowledge into smaller model.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Distillation is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Compare quality drop vs latency/cost gains.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Distillation</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-model-quantization" data-search="model quantization reducing numeric precision for efficiency. validate latency gain and accuracy regression thresholds.">
+  <div class="concept-head">
+    <h3>Model Quantization</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Reducing numeric precision for efficiency.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Model Quantization is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate latency gain and accuracy regression thresholds.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Model Quantization</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-mixture-of-experts-moe" data-search="mixture of experts (moe) architecture routing tokens to selected expert subnetworks. test routing stability and tail-latency behavior.">
+  <div class="concept-head">
+    <h3>Mixture of Experts (MoE)</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Architecture routing tokens to selected expert subnetworks.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like teaching a student with lessons and feedback.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, Mixture of Experts (MoE) is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test routing stability and tail-latency behavior.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when comparing trained variants and alignment quality.</li>
+      <li><strong>Failure mode:</strong> Poor data/alignment introduces biased or unsafe behavior.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Mixture of Experts (MoE)</code>.</li>
+    </ul>
+  </div>
+</article>
+
+  </div>
+</section>
+
+<section class="doc-section" id="sec-4-5-reasoning-and-prompt-strategies">
+  <div class="section-header">
+    <span class="badge">4.5</span>
+    <h2>Reasoning and Prompt Strategies</h2>
+    <p>Use this to improve reasoning quality without changing model weights.</p>
+  </div>
+  <div class="concept-grid">
+    
+<article class="concept-card" id="term-chain-of-thought-cot" data-search="chain of thought (cot) prompting strategy encouraging intermediate reasoning steps. check answer quality gains vs verbosity/safety concerns.">
+  <div class="concept-head">
+    <h3>Chain of Thought (CoT)</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Prompting strategy encouraging intermediate reasoning steps.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like showing worked examples so the student copies the pattern.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>For complex root-cause analysis, chain-of-thought prompting improves reasoning depth.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Check answer quality gains vs verbosity/safety concerns.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to improve reasoning quality without changing model weights.</li>
+      <li><strong>Failure mode:</strong> Prompt strategy may overfit examples and hide edge failures.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Chain of Thought (CoT)</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-self-consistency" data-search="self-consistency sampling multiple reasoning paths and selecting consistent answer. evaluate accuracy improvement vs higher token cost.">
+  <div class="concept-head">
+    <h3>Self-Consistency</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Sampling multiple reasoning paths and selecting consistent answer.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like showing worked examples so the student copies the pattern.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You sample multiple reasoning paths and choose the most consistent answer.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Evaluate accuracy improvement vs higher token cost.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to improve reasoning quality without changing model weights.</li>
+      <li><strong>Failure mode:</strong> Prompt strategy may overfit examples and hide edge failures.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Self-Consistency</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-few-shot-learning" data-search="few-shot learning providing several examples in prompt. validate sensitivity to example quality/order.">
+  <div class="concept-head">
+    <h3>Few-Shot Learning</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Providing several examples in prompt.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like showing worked examples so the student copies the pattern.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Provide 3 examples of good test cases to steer output format and depth.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate sensitivity to example quality/order.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to improve reasoning quality without changing model weights.</li>
+      <li><strong>Failure mode:</strong> Prompt strategy may overfit examples and hide edge failures.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Few-Shot Learning</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-zero-shot-learning" data-search="zero-shot learning no examples; model relies on instruction only. benchmark baseline ability without demonstrations.">
+  <div class="concept-head">
+    <h3>Zero-Shot Learning</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>No examples; model relies on instruction only.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like showing worked examples so the student copies the pattern.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>No examples: model still generates smoke tests from short requirements.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Benchmark baseline ability without demonstrations.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to improve reasoning quality without changing model weights.</li>
+      <li><strong>Failure mode:</strong> Prompt strategy may overfit examples and hide edge failures.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Zero-Shot Learning</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-one-shot-learning" data-search="one-shot learning single example provided in prompt. compare to zero-shot/few-shot outcomes.">
+  <div class="concept-head">
+    <h3>One-Shot Learning</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Single example provided in prompt.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like showing worked examples so the student copies the pattern.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Single sample test case guides model style for similar features.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Compare to zero-shot/few-shot outcomes.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to improve reasoning quality without changing model weights.</li>
+      <li><strong>Failure mode:</strong> Prompt strategy may overfit examples and hide edge failures.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>One-Shot Learning</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-in-context-learning" data-search="in-context learning learning behavior from prompt context without weight updates. test context contamination and instruction conflict handling.">
+  <div class="concept-head">
+    <h3>In-Context Learning</h3>
+    <span class="pill">Intermediate</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Learning behavior from prompt context without weight updates.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like showing worked examples so the student copies the pattern.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Add temporary product glossary in prompt without retraining the model.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test context contamination and instruction conflict handling.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this to improve reasoning quality without changing model weights.</li>
+      <li><strong>Failure mode:</strong> Prompt strategy may overfit examples and hide edge failures.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>In-Context Learning</code>.</li>
+    </ul>
+  </div>
+</article>
+
+  </div>
+</section>
+
+<section class="doc-section" id="sec-4-6-inference-performance-and-cost">
+  <div class="section-header">
+    <span class="badge">4.6</span>
+    <h2>Inference, Performance, and Cost</h2>
+    <p>Use this when validating production performance and cost efficiency.</p>
+  </div>
+  <div class="concept-grid">
+    
+<article class="concept-card" id="term-llm-inference" data-search="llm inference runtime generation using trained model weights. measure p50/p95 latency and error rate.">
+  <div class="concept-head">
+    <h3>LLM Inference</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Runtime generation using trained model weights.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like measuring speed, traffic, and electricity bill of a machine.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You add LLM Inference to your performance dashboard and set alert thresholds.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Measure p50/p95 latency and error rate.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when validating production performance and cost efficiency.</li>
+      <li><strong>Failure mode:</strong> Latency/cost regressions can break UX and budget goals.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>LLM Inference</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-latency" data-search="latency time to get response (first token/full response). set slos and validate under load.">
+  <div class="concept-head">
+    <h3>Latency</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Time to get response (first token/full response).</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like measuring speed, traffic, and electricity bill of a machine.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>p95 latency SLO is enforced for interactive test assistant responses.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Set SLOs and validate under load.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when validating production performance and cost efficiency.</li>
+      <li><strong>Failure mode:</strong> Latency/cost regressions can break UX and budget goals.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Latency</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-throughput" data-search="throughput requests/tokens processed per time unit. stress test concurrency and scaling.">
+  <div class="concept-head">
+    <h3>Throughput</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Requests/tokens processed per time unit.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like measuring speed, traffic, and electricity bill of a machine.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Load test validates stable throughput at 150 concurrent users.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Stress test concurrency and scaling.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when validating production performance and cost efficiency.</li>
+      <li><strong>Failure mode:</strong> Latency/cost regressions can break UX and budget goals.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Throughput</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-streaming" data-search="streaming returning tokens incrementally while generating. validate partial outputs and stream termination behavior.">
+  <div class="concept-head">
+    <h3>Streaming</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Returning tokens incrementally while generating.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like measuring speed, traffic, and electricity bill of a machine.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>UI displays tokens as they arrive while preserving valid markdown.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate partial outputs and stream termination behavior.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when validating production performance and cost efficiency.</li>
+      <li><strong>Failure mode:</strong> Latency/cost regressions can break UX and budget goals.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Streaming</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-batch-inference" data-search="batch inference processing multiple inputs in grouped execution. verify ordering and per-item output integrity.">
+  <div class="concept-head">
+    <h3>Batch Inference</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Processing multiple inputs in grouped execution.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like measuring speed, traffic, and electricity bill of a machine.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You add Batch Inference to your performance dashboard and set alert thresholds.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Verify ordering and per-item output integrity.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when validating production performance and cost efficiency.</li>
+      <li><strong>Failure mode:</strong> Latency/cost regressions can break UX and budget goals.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Batch Inference</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-api-endpoint" data-search="api endpoint url/function exposing model capability. contract test schema, auth, and error codes.">
+  <div class="concept-head">
+    <h3>API Endpoint</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>URL/function exposing model capability.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like measuring speed, traffic, and electricity bill of a machine.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You add API Endpoint to your performance dashboard and set alert thresholds.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Contract test schema, auth, and error codes.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when validating production performance and cost efficiency.</li>
+      <li><strong>Failure mode:</strong> Latency/cost regressions can break UX and budget goals.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>API Endpoint</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-rate-limit" data-search="rate limit allowed request/token frequency caps. test retry/backoff and user-facing errors.">
+  <div class="concept-head">
+    <h3>Rate Limit</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Allowed request/token frequency caps.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like measuring speed, traffic, and electricity bill of a machine.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Client handles 429 with jitter backoff and friendly retry messaging.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test retry/backoff and user-facing errors.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when validating production performance and cost efficiency.</li>
+      <li><strong>Failure mode:</strong> Latency/cost regressions can break UX and budget goals.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Rate Limit</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-cost-per-token" data-search="cost per token billing metric tied to token usage. create budget alerts and cost regression tests.">
+  <div class="concept-head">
+    <h3>Cost per Token</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Billing metric tied to token usage.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like measuring speed, traffic, and electricity bill of a machine.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Daily cost dashboard catches prompt bloat and model overuse.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Create budget alerts and cost regression tests.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when validating production performance and cost efficiency.</li>
+      <li><strong>Failure mode:</strong> Latency/cost regressions can break UX and budget goals.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Cost per Token</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-token-usage" data-search="token usage count of input/output tokens consumed. validate telemetry and cost attribution accuracy.">
+  <div class="concept-head">
+    <h3>Token Usage</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Count of input/output tokens consumed.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like measuring speed, traffic, and electricity bill of a machine.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>You add Token Usage to your performance dashboard and set alert thresholds.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate telemetry and cost attribution accuracy.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when validating production performance and cost efficiency.</li>
+      <li><strong>Failure mode:</strong> Latency/cost regressions can break UX and budget goals.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Token Usage</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-structured-output" data-search="structured output model output constrained to schema. enforce json schema validation in tests.">
+  <div class="concept-head">
+    <h3>Structured Output</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Model output constrained to schema.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like measuring speed, traffic, and electricity bill of a machine.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Output must match JSON schema for direct ingestion into test management tools.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Enforce JSON schema validation in tests.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when validating production performance and cost efficiency.</li>
+      <li><strong>Failure mode:</strong> Latency/cost regressions can break UX and budget goals.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Structured Output</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-json-mode" data-search="json mode generation mode targeting valid json output. fuzz malformed prompts and verify valid json recovery.">
+  <div class="concept-head">
+    <h3>JSON Mode</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Generation mode targeting valid JSON output.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like measuring speed, traffic, and electricity bill of a machine.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Model is forced to produce valid JSON for automation workflows.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Fuzz malformed prompts and verify valid JSON recovery.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when validating production performance and cost efficiency.</li>
+      <li><strong>Failure mode:</strong> Latency/cost regressions can break UX and budget goals.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>JSON Mode</code>.</li>
+    </ul>
+  </div>
+</article>
+
+  </div>
+</section>
+
+<section class="doc-section" id="sec-4-7-tools-agents-and-memory">
+  <div class="section-header">
+    <span class="badge">4.7</span>
+    <h2>Tools, Agents, and Memory</h2>
+    <p>Use this when building tool-enabled agent workflows.</p>
+  </div>
+  <div class="concept-grid">
+    
+<article class="concept-card" id="term-function-calling" data-search="function calling model returns tool/function arguments instead of free text. validate argument schema and tool selection correctness.">
+  <div class="concept-head">
+    <h3>Function Calling</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Model returns tool/function arguments instead of free text.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Model returns JSON args to `create_test_case(feature, priority, steps)`.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate argument schema and tool selection correctness.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Function Calling</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-tool-use" data-search="tool use model invokes external systems (search, db, apis). test tool timeout, retries, and fallback logic.">
+  <div class="concept-head">
+    <h3>Tool Use</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Model invokes external systems (search, DB, APIs).</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Agent uses Jira API + docs retriever to generate risk-based test scope.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test tool timeout, retries, and fallback logic.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Tool Use</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-agent" data-search="agent llm-driven system deciding actions and tools iteratively. validate plan quality and bounded execution steps.">
+  <div class="concept-head">
+    <h3>Agent</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>LLM-driven system deciding actions and tools iteratively.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>An AI QA agent plans checks, runs tools, and summarizes release risks.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate plan quality and bounded execution steps.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Agent</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-agent-framework" data-search="agent framework runtime/orchestration library for agent loops. test state transitions and error propagation.">
+  <div class="concept-head">
+    <h3>Agent Framework</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Runtime/orchestration library for agent loops.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>An agent workflow uses Agent Framework while generating and validating test artifacts.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test state transitions and error propagation.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Agent Framework</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-multi-agent-system" data-search="multi-agent system multiple collaborating agents with roles. validate coordination, conflict handling, and deadlock avoidance.">
+  <div class="concept-head">
+    <h3>Multi-Agent System</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Multiple collaborating agents with roles.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>An agent workflow uses Multi-Agent System while generating and validating test artifacts.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate coordination, conflict handling, and deadlock avoidance.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Multi-Agent System</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-planner" data-search="planner component generating task plan/subgoals. assert plan completeness and constraint awareness.">
+  <div class="concept-head">
+    <h3>Planner</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Component generating task plan/subgoals.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Planner splits goal into data gathering, analysis, and recommendation steps.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Assert plan completeness and constraint awareness.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Planner</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-executor" data-search="executor component performing planned actions/tools. verify execution safety, retries, and idempotency.">
+  <div class="concept-head">
+    <h3>Executor</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Component performing planned actions/tools.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Executor runs selected tools and handles failures with retries.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Verify execution safety, retries, and idempotency.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Executor</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-reflection" data-search="reflection self-critique loop to improve intermediate outputs. check quality gain vs latency/cost overhead.">
+  <div class="concept-head">
+    <h3>Reflection</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Self-critique loop to improve intermediate outputs.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>An agent workflow uses Reflection while generating and validating test artifacts.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Check quality gain vs latency/cost overhead.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Reflection</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-memory" data-search="memory stored context across steps/conversations. validate memory write/read correctness and privacy.">
+  <div class="concept-head">
+    <h3>Memory</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Stored context across steps/conversations.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Agent remembers previous sprint failures and includes them in new test plans.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate memory write/read correctness and privacy.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Memory</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-short-term-memory" data-search="short-term memory session-scoped temporary context. ensure expiry and reset between sessions.">
+  <div class="concept-head">
+    <h3>Short-Term Memory</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Session-scoped temporary context.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>An agent workflow uses Short-Term Memory while generating and validating test artifacts.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Ensure expiry and reset between sessions.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Short-Term Memory</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-long-term-memory" data-search="long-term memory persistent memory across sessions. test stale memory and conflict resolution.">
+  <div class="concept-head">
+    <h3>Long-Term Memory</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Persistent memory across sessions.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>An agent workflow uses Long-Term Memory while generating and validating test artifacts.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test stale memory and conflict resolution.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Long-Term Memory</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-conversation-memory" data-search="conversation memory history of dialogue turns used for continuity. check context-window truncation and summarization quality.">
+  <div class="concept-head">
+    <h3>Conversation Memory</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>History of dialogue turns used for continuity.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>An agent workflow uses Conversation Memory while generating and validating test artifacts.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Check context-window truncation and summarization quality.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Conversation Memory</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-external-memory" data-search="external memory memory in external stores (db/vector/kg). validate retrieval freshness and access controls.">
+  <div class="concept-head">
+    <h3>External Memory</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Memory in external stores (DB/vector/KG).</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>An agent workflow uses External Memory while generating and validating test artifacts.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Validate retrieval freshness and access controls.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>External Memory</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-agent-workflow" data-search="agent workflow end-to-end graph of planning, tools, memory, and response. trace each transition with deterministic logs.">
+  <div class="concept-head">
+    <h3>Agent Workflow</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>End-to-end graph of planning, tools, memory, and response.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>An agent workflow uses Agent Workflow while generating and validating test artifacts.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Trace each transition with deterministic logs.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Agent Workflow</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-tool-invocation" data-search="tool invocation actual execution call to a selected tool. contract-test inputs/outputs and failure handling.">
+  <div class="concept-head">
+    <h3>Tool Invocation</h3>
+    <span class="pill">Advanced</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Actual execution call to a selected tool.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like a helper that can use tools and remember past tasks.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>An agent workflow uses Tool Invocation while generating and validating test artifacts.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Contract-test inputs/outputs and failure handling.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when building tool-enabled agent workflows.</li>
+      <li><strong>Failure mode:</strong> Tool/memory errors can cascade into incorrect agent actions.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Tool Invocation</code>.</li>
+    </ul>
+  </div>
+</article>
+
+  </div>
+</section>
+
+<section class="doc-section" id="sec-4-8-security-safety-and-evaluation">
+  <div class="section-header">
+    <span class="badge">4.8</span>
+    <h2>Security, Safety, and Evaluation</h2>
+    <p>Use this when hardening safety and abuse resistance.</p>
+  </div>
+  <div class="concept-grid">
+    
+<article class="concept-card" id="term-guardrails" data-search="guardrails rules/filters to constrain unsafe or invalid model behavior. test deny/allow paths and false-positive rate.">
+  <div class="concept-head">
+    <h3>Guardrails</h3>
+    <span class="pill">Critical</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Rules/filters to constrain unsafe or invalid model behavior.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like locks and alarms to stop bad instructions.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Rules filter toxic or policy-violating outputs before user display.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test deny/allow paths and false-positive rate.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when hardening safety and abuse resistance.</li>
+      <li><strong>Failure mode:</strong> Injection/jailbreak can bypass policy and leak sensitive data.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Guardrails</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-prompt-injection" data-search="prompt injection malicious prompt tries to override system/tool policies. run adversarial corpora and check policy isolation.">
+  <div class="concept-head">
+    <h3>Prompt Injection</h3>
+    <span class="pill">Critical</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Malicious prompt tries to override system/tool policies.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like locks and alarms to stop bad instructions.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Retrieved docs include malicious text; system prompt isolation is tested.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Run adversarial corpora and check policy isolation.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when hardening safety and abuse resistance.</li>
+      <li><strong>Failure mode:</strong> Injection/jailbreak can bypass policy and leak sensitive data.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Prompt Injection</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-jailbreak" data-search="jailbreak attempts to bypass model safety constraints. maintain evolving jailbreak test suites.">
+  <div class="concept-head">
+    <h3>Jailbreak</h3>
+    <span class="pill">Critical</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Attempts to bypass model safety constraints.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like locks and alarms to stop bad instructions.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Adversarial prompts try to bypass restrictions; refusal behavior is verified.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Maintain evolving jailbreak test suites.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when hardening safety and abuse resistance.</li>
+      <li><strong>Failure mode:</strong> Injection/jailbreak can bypass policy and leak sensitive data.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Jailbreak</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-evaluation-benchmark" data-search="evaluation benchmark standardized task set for objective comparison. track quality trend release-over-release.">
+  <div class="concept-head">
+    <h3>Evaluation Benchmark</h3>
+    <span class="pill">Critical</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Standardized task set for objective comparison.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like locks and alarms to stop bad instructions.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Weekly benchmark compares model quality across fixed QA datasets.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Track quality trend release-over-release.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when hardening safety and abuse resistance.</li>
+      <li><strong>Failure mode:</strong> Injection/jailbreak can bypass policy and leak sensitive data.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Evaluation Benchmark</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-model-benchmark" data-search="model benchmark comparative metrics across models/configurations. select model by quality-latency-cost tradeoff.">
+  <div class="concept-head">
+    <h3>Model Benchmark</h3>
+    <span class="pill">Critical</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Comparative metrics across models/configurations.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like locks and alarms to stop bad instructions.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Compare model A vs B on accuracy, latency, and total cost.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Select model by quality-latency-cost tradeoff.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when hardening safety and abuse resistance.</li>
+      <li><strong>Failure mode:</strong> Injection/jailbreak can bypass policy and leak sensitive data.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Model Benchmark</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-red-teaming" data-search="red teaming structured adversarial testing for security and abuse. include privacy, harmful output, and tool abuse scenarios.">
+  <div class="concept-head">
+    <h3>Red Teaming</h3>
+    <span class="pill">Critical</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Structured adversarial testing for security and abuse.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like locks and alarms to stop bad instructions.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Security team runs attack prompts for leakage, abuse, and policy bypass.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Include privacy, harmful output, and tool abuse scenarios.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this when hardening safety and abuse resistance.</li>
+      <li><strong>Failure mode:</strong> Injection/jailbreak can bypass policy and leak sensitive data.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Red Teaming</code>.</li>
+    </ul>
+  </div>
+</article>
+
+
+
+  </div>
+</section>
+
+<section class="doc-section" id="sec-4-9-observability-and-operations">
+  <div class="section-header">
+    <span class="badge">4.9</span>
+    <h2>Observability and Operations</h2>
+    <p>Use this for production visibility and operational reliability.</p>
+  </div>
+  <div class="concept-grid">
+    
+<article class="concept-card" id="term-observability" data-search="observability ability to inspect system behavior via logs/metrics/traces. ensure end-to-end visibility per request id.">
+  <div class="concept-head">
+    <h3>Observability</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Ability to inspect system behavior via logs/metrics/traces.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like CCTV + logs so you can replay what went wrong.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Trace ID links user prompt to retrieval, model call, and final response.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Ensure end-to-end visibility per request ID.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this for production visibility and operational reliability.</li>
+      <li><strong>Failure mode:</strong> Missing traces block root-cause analysis during incidents.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Observability</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-tracing" data-search="tracing step-level timeline of prompts, tools, and model calls. debug failures and latency bottlenecks quickly.">
+  <div class="concept-head">
+    <h3>Tracing</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Step-level timeline of prompts, tools, and model calls.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like CCTV + logs so you can replay what went wrong.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>A slow response is traced to reranker timeout in one region.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Debug failures and latency bottlenecks quickly.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this for production visibility and operational reliability.</li>
+      <li><strong>Failure mode:</strong> Missing traces block root-cause analysis during incidents.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Tracing</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-model-monitoring" data-search="model monitoring continuous tracking of quality, drift, latency, and failures. alert on regression thresholds.">
+  <div class="concept-head">
+    <h3>Model Monitoring</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Continuous tracking of quality, drift, latency, and failures.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like CCTV + logs so you can replay what went wrong.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>Drift alerts trigger when answer quality drops after model upgrade.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Alert on regression thresholds.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this for production visibility and operational reliability.</li>
+      <li><strong>Failure mode:</strong> Missing traces block root-cause analysis during incidents.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>Model Monitoring</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-llmops" data-search="llmops operational discipline for llm lifecycle in production. standardize deployment gates and rollback plans.">
+  <div class="concept-head">
+    <h3>LLMOps</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Operational discipline for LLM lifecycle in production.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like CCTV + logs so you can replay what went wrong.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>CI/CD pipeline includes eval gate before promoting a new prompt/model.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Standardize deployment gates and rollback plans.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this for production visibility and operational reliability.</li>
+      <li><strong>Failure mode:</strong> Missing traces block root-cause analysis during incidents.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>LLMOps</code>.</li>
+    </ul>
+  </div>
+</article>
+
+<article class="concept-card" id="term-ai-pipeline" data-search="ai pipeline full flow from data to model to application response. test stage contracts and recovery points.">
+  <div class="concept-head">
+    <h3>AI Pipeline</h3>
+    <span class="pill">Production</span>
+  </div>
+
+  <div class="concept-block">
+    <h4>Definition</h4>
+    <p>Full flow from data to model to application response.</p>
+  </div>
+
+  <div class="concept-block eli5">
+    <h4>Explain Like I'm 5</h4>
+    <p>Think of it like CCTV + logs so you can replay what went wrong.</p>
+  </div>
+
+  <div class="concept-block">
+    <h4>Example</h4>
+    <ul>
+      <li>In a QA assistant, AI Pipeline is tested with regression prompts to verify reliability.</li>
+    </ul>
+  </div>
+
+  <div class="concept-block">
+    <h4>How QA/SDET Can Use It</h4>
+    <ul>
+      <li>Test stage contracts and recovery points.</li>
+      <li>Write at least one positive, one negative, and one edge-case test for this concept.</li>
+      <li>Track this concept with measurable checks in CI (quality, safety, latency, or cost).</li>
+    </ul>
+  </div>
+
+  <div class="concept-block key-checks">
+    <h4>Key Checks</h4>
+    <ul>
+      <li><strong>When to use:</strong> Use this for production visibility and operational reliability.</li>
+      <li><strong>Failure mode:</strong> Missing traces block root-cause analysis during incidents.</li>
+      <li><strong>Automation idea:</strong> Add regression prompts and expected behavior assertions for <code>AI Pipeline</code>.</li>
+    </ul>
+  </div>
+</article>
+
+  </div>
+</section>
+
+
+      <section class="doc-section" id="qa-playbook">
+        <div class="section-header">
+          <span class="badge">QA PLAYBOOK</span>
+          <h2>Production-Ready QA Checklist for LLM Systems</h2>
+        </div>
+        <div class="concept-grid">
+          <article class="concept-card">
+            <div class="concept-head"><h3>Quality</h3><span class="pill">Must Have</span></div>
+            <div class="concept-block"><ul>
+              <li>Golden dataset with expected behavior rubric.</li>
+              <li>Regression prompts for every critical business flow.</li>
+              <li>Grounding checks where applicable.</li>
+            </ul></div>
+          </article>
+          <article class="concept-card">
+            <div class="concept-head"><h3>Safety & Security</h3><span class="pill">Critical</span></div>
+            <div class="concept-block"><ul>
+              <li>Prompt injection and jailbreak test suites.</li>
+              <li>PII/secret leakage scans in outputs and logs.</li>
+              <li>Policy refusal consistency tests.</li>
+            </ul></div>
+          </article>
+          <article class="concept-card">
+            <div class="concept-head"><h3>Performance & Cost</h3><span class="pill">Ops</span></div>
+            <div class="concept-block"><ul>
+              <li>p50/p95 latency and throughput SLO tracking.</li>
+              <li>Token usage and cost-per-request monitoring.</li>
+              <li>Load tests with realistic prompt lengths.</li>
+            </ul></div>
+          </article>
+          <article class="concept-card">
+            <div class="concept-head"><h3>Reliability & Observability</h3><span class="pill">Ops</span></div>
+            <div class="concept-block"><ul>
+              <li>End-to-end traces from prompt to final output.</li>
+              <li>Retry/backoff tests for APIs and tools.</li>
+              <li>Release gates for model/prompt changes.</li>
+            </ul></div>
+          </article>
+        </div>
+      </section>
+
+      <div class="footer">Built for QA/SDET learning and practical LLM validation. Update this file as your stack evolves (new models, tools, retrievers, guardrails).</div>
+    </main>
+  </div>
+
+  <script>
+    const bodyEl = document.documentElement;
+    const themeBtn = document.getElementById('themeBtn');
+    const sideSearch = document.getElementById('sideSearch');
+
+    themeBtn.addEventListener('click', () => {
+      const now = bodyEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      bodyEl.setAttribute('data-theme', now);
+    });
+
+    sideSearch.addEventListener('input', (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      const cards = [...document.querySelectorAll('.concept-card[data-search]')];
+      cards.forEach(card => {
+        const show = !q || card.dataset.search.includes(q);
+        card.classList.toggle('hidden', !show);
+      });
+    });
+  </script>
+</body>
+</html>

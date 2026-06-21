@@ -1,0 +1,182 @@
+{
+    "name": "Agentic RAG with Multi-Tool Agent",
+    "nodes": [
+        {
+            "parameters": {},
+            "id": "chat-trigger",
+            "name": "Chat Trigger",
+            "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+            "typeVersion": 1.1,
+            "position": [
+                200,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "options": {
+                    "systemMessage": "You are a QA testing expert. Use the available tools to research the user's question. Search multiple sources when needed, and synthesize comprehensive answers. Always cite which source your information came from."
+                }
+            },
+            "id": "ai-agent",
+            "name": "AI Agent",
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 1.7,
+            "position": [
+                600,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "model": "gpt-4o",
+                "options": {
+                    "temperature": 0
+                }
+            },
+            "id": "openai-chat",
+            "name": "OpenAI Chat Model (GPT-4o)",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1,
+            "position": [
+                400,
+                500
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "YOUR_OPENAI_CREDENTIAL_ID",
+                    "name": "OpenAI API"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "name": "api_test_docs",
+                "description": "Search API testing documentation and test cases"
+            },
+            "id": "api-tool",
+            "name": "API Docs Retriever",
+            "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+            "typeVersion": 1,
+            "position": [
+                500,
+                700
+            ]
+        },
+        {
+            "parameters": {
+                "name": "ui_test_docs",
+                "description": "Search UI testing guides and Selenium/Playwright documentation"
+            },
+            "id": "ui-tool",
+            "name": "UI Docs Retriever",
+            "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+            "typeVersion": 1,
+            "position": [
+                700,
+                700
+            ]
+        },
+        {
+            "parameters": {
+                "name": "bug_reports",
+                "description": "Search historical bug reports and known issues"
+            },
+            "id": "bug-tool",
+            "name": "Bug Reports Retriever",
+            "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+            "typeVersion": 1,
+            "position": [
+                900,
+                700
+            ]
+        },
+        {
+            "parameters": {
+                "contextWindowLength": 5
+            },
+            "id": "memory",
+            "name": "Window Buffer Memory",
+            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+            "typeVersion": 1.3,
+            "position": [
+                400,
+                200
+            ]
+        }
+    ],
+    "connections": {
+        "Chat Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI Chat Model (GPT-4o)": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "API Docs Retriever": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "UI Docs Retriever": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Bug Reports Retriever": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Window Buffer Memory": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "meta": {
+        "description": "Agentic RAG with multi-tool AI agent that searches API docs, UI docs, and bug reports dynamically"
+    }
+}

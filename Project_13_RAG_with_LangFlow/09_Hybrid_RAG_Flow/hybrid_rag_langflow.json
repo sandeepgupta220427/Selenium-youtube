@@ -1,0 +1,281 @@
+{
+    "id": "hybrid-rag-ensemble",
+    "data": {
+        "nodes": [
+            {
+                "id": "File-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 100,
+                    "y": 300
+                },
+                "data": {
+                    "type": "File",
+                    "node": {
+                        "display_name": "File Loader"
+                    }
+                }
+            },
+            {
+                "id": "TextSplitter-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 400,
+                    "y": 300
+                },
+                "data": {
+                    "type": "RecursiveCharacterTextSplitter",
+                    "node": {
+                        "display_name": "Text Splitter",
+                        "template": {
+                            "chunk_size": {
+                                "type": "int",
+                                "value": 1000
+                            },
+                            "chunk_overlap": {
+                                "type": "int",
+                                "value": 200
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "BM25-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 700,
+                    "y": 150
+                },
+                "data": {
+                    "type": "BM25Retriever",
+                    "node": {
+                        "display_name": "BM25 Keyword Retriever",
+                        "description": "Keyword-based retrieval (exact match, TF-IDF scoring)",
+                        "template": {
+                            "k": {
+                                "type": "int",
+                                "value": 4
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "Embeddings-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 700,
+                    "y": 500
+                },
+                "data": {
+                    "type": "OpenAIEmbeddings",
+                    "node": {
+                        "display_name": "OpenAI Embeddings",
+                        "template": {
+                            "model": {
+                                "type": "str",
+                                "value": "text-embedding-3-small"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "VectorStore-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1000,
+                    "y": 450
+                },
+                "data": {
+                    "type": "Chroma",
+                    "node": {
+                        "display_name": "Chroma Vector Store",
+                        "template": {
+                            "collection_name": {
+                                "type": "str",
+                                "value": "hybrid_rag"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "VectorRetriever-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1000,
+                    "y": 300
+                },
+                "data": {
+                    "type": "Retriever",
+                    "node": {
+                        "display_name": "Vector Retriever (Semantic)",
+                        "template": {
+                            "search_kwargs": {
+                                "type": "dict",
+                                "value": {
+                                    "k": 4
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "Ensemble-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1300,
+                    "y": 250
+                },
+                "data": {
+                    "type": "EnsembleRetriever",
+                    "node": {
+                        "display_name": "Ensemble Retriever (RRF)",
+                        "description": "Merge BM25 + Vector results using Reciprocal Rank Fusion",
+                        "template": {
+                            "weights": {
+                                "type": "list",
+                                "value": [
+                                    0.4,
+                                    0.6
+                                ],
+                                "display_name": "Weights [BM25, Vector]"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ChatInput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1300,
+                    "y": 500
+                },
+                "data": {
+                    "type": "ChatInput",
+                    "node": {
+                        "display_name": "Chat Input"
+                    }
+                }
+            },
+            {
+                "id": "Prompt-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1600,
+                    "y": 350
+                },
+                "data": {
+                    "type": "Prompt",
+                    "node": {
+                        "display_name": "RAG Prompt",
+                        "template": {
+                            "template": {
+                                "type": "str",
+                                "value": "Answer the question using the provided context.\n\nContext:\n{context}\n\nQuestion: {question}\n\nAnswer:"
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "LLM-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 1900,
+                    "y": 350
+                },
+                "data": {
+                    "type": "ChatOpenAI",
+                    "node": {
+                        "display_name": "ChatOpenAI (gpt-4o-mini)",
+                        "template": {
+                            "model_name": {
+                                "type": "str",
+                                "value": "gpt-4o-mini"
+                            },
+                            "temperature": {
+                                "type": "float",
+                                "value": 0
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ChatOutput-1",
+                "type": "genericNode",
+                "position": {
+                    "x": 2200,
+                    "y": 350
+                },
+                "data": {
+                    "type": "ChatOutput",
+                    "node": {
+                        "display_name": "Chat Output"
+                    }
+                }
+            }
+        ],
+        "edges": [
+            {
+                "source": "File-1",
+                "target": "TextSplitter-1"
+            },
+            {
+                "source": "TextSplitter-1",
+                "target": "BM25-1",
+                "targetHandle": "documents"
+            },
+            {
+                "source": "TextSplitter-1",
+                "target": "VectorStore-1",
+                "targetHandle": "documents"
+            },
+            {
+                "source": "Embeddings-1",
+                "target": "VectorStore-1",
+                "targetHandle": "embeddings"
+            },
+            {
+                "source": "VectorStore-1",
+                "target": "VectorRetriever-1"
+            },
+            {
+                "source": "BM25-1",
+                "target": "Ensemble-1",
+                "targetHandle": "retriever_1"
+            },
+            {
+                "source": "VectorRetriever-1",
+                "target": "Ensemble-1",
+                "targetHandle": "retriever_2"
+            },
+            {
+                "source": "Ensemble-1",
+                "target": "Prompt-1",
+                "targetHandle": "context"
+            },
+            {
+                "source": "ChatInput-1",
+                "target": "Prompt-1",
+                "targetHandle": "question"
+            },
+            {
+                "source": "Prompt-1",
+                "target": "LLM-1"
+            },
+            {
+                "source": "LLM-1",
+                "target": "ChatOutput-1"
+            }
+        ]
+    },
+    "description": "Hybrid RAG with BM25 + Vector Ensemble Retriever using Reciprocal Rank Fusion",
+    "name": "Hybrid RAG Pipeline",
+    "endpoint_name": "hybrid-rag"
+}
