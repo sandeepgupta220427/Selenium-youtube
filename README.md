@@ -540,12 +540,12 @@ This course material is part of the **AI Tester Blueprint** series.
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Authors & Attribution
 
-**Pramod Dutta**  
-*QA Automation Expert | AI Testing Advocate*
-
-[![GitHub](https://img.shields.io/badge/GitHub-PramodDutta-181717?style=flat&logo=github)](https://github.com/PramodDutta)
+- **Sandeep Gupta** (Workspace Owner & Student)  
+  [![GitHub](https://img.shields.io/badge/GitHub-sandeepgupta220427-181717?style=flat&logo=github)](https://github.com/sandeepgupta220427)
+- **Pramod Dutta** (Original Course Creator)  
+  [![GitHub](https://img.shields.io/badge/GitHub-PramodDutta-181717?style=flat&logo=github)](https://github.com/PramodDutta)
 
 ---
 
